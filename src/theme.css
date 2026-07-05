@@ -1,0 +1,101 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================================
+   Lima color tokens — warm, earthy: soil, clay, sun.
+   Single source of truth (consumed by tailwind.config.js).
+   All pairings checked for WCAG AA (outdoor readability first).
+   ============================================================ */
+:root {
+  /* canvas */
+  --c-bg: 250 243 231;         /* warm cream        #FAF3E7 */
+  --c-surface: 255 252 245;    /* card              #FFFCF5 */
+  --c-surface-2: 243 233 216;  /* inset / chip      #F3E9D8 */
+  /* grounding browns */
+  --c-soil: 59 42 30;          /* rich brown        #3B2A1E */
+  --c-umber: 107 79 56;        /* warm umber        #6B4F38 */
+  /* text */
+  --c-ink: 43 29 18;           /* near-black brown  #2B1D12 */
+  --c-ink-soft: 109 83 64;     /* secondary text    #6D5340 */
+  --c-ink-faint: 138 110 88;   /* hints, large only #8A6E58 */
+  /* primary accent — burnt terracotta / clay */
+  --c-clay: 179 84 47;         /* #B3542F */
+  --c-clay-strong: 154 68 35;  /* pressed / small text #9A4423 */
+  --c-clay-soft: 233 201 180;  /* tint background   #E9C9B4 */
+  --c-on-clay: 255 246 234;    /* text on clay      #FFF6EA */
+  /* supporting */
+  --c-sun: 181 122 24;         /* harvest gold      #B57A18 */
+  --c-sky: 54 111 150;         /* water / rain      #366F96 */
+  /* genuine warnings ONLY */
+  --c-danger: 179 38 30;       /* #B3261E */
+  --c-on-danger: 255 245 242;
+  /* hairlines */
+  --c-line: 228 213 190;       /* #E4D5BE */
+}
+
+.dark {
+  --c-bg: 28 18 12;            /* #1C120C */
+  --c-surface: 42 28 18;       /* #2A1C12 */
+  --c-surface-2: 58 40 24;     /* #3A2818 */
+  --c-soil: 20 13 8;
+  --c-umber: 138 106 79;
+  --c-ink: 245 234 218;        /* #F5EADA */
+  --c-ink-soft: 200 171 146;   /* #C8AB92 */
+  --c-ink-faint: 154 126 102;
+  --c-clay: 224 122 80;        /* #E07A50 */
+  --c-clay-strong: 240 144 104;
+  --c-clay-soft: 74 46 29;
+  --c-on-clay: 43 18 6;
+  --c-sun: 232 176 75;
+  --c-sky: 127 180 214;
+  --c-danger: 242 102 90;
+  --c-on-danger: 43 10 6;
+  --c-line: 68 48 33;
+}
+
+@layer base {
+  html {
+    -webkit-tap-highlight-color: transparent;
+    text-size-adjust: 100%;
+  }
+  body {
+    @apply bg-bg text-ink font-sans antialiased;
+    overscroll-behavior-y: none;
+  }
+  /* Big, obvious focus for keyboard / switch users */
+  :focus-visible {
+    outline: 3px solid rgb(var(--c-clay));
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
+  input, select, textarea {
+    font-size: 16px; /* prevents iOS zoom-on-focus */
+  }
+}
+
+@layer components {
+  .card {
+    @apply bg-surface rounded-xl2 shadow-card border border-line/70;
+  }
+  .tap {
+    /* every interactive element ≥ 48px — thumbs, gloves, sunlight */
+    min-height: 48px;
+    min-width: 48px;
+  }
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+}
+
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  .text-balance { text-wrap: balance; }
+}
+
+/* Leaflet container needs explicit size; styled after lazy CSS import */
+.leaflet-container {
+  border-radius: 1.25rem;
+  font-family: inherit;
+}

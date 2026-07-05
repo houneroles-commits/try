@@ -1,0 +1,17 @@
+{
+  "name": "lima-voice",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Lima voice line — inbound calls (Africa's Talking Voice) → STT → Claude → TTS",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "simulate": "node simulate.js"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "latest",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.0"
+  }
+}
