@@ -1,4 +1,4 @@
-import { Suspense, lazy, useMemo, useState } from 'react';
+import { Suspense, lazy, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import { useApp } from '../state/AppContext';
@@ -10,6 +10,7 @@ import { ForecastStrip, WeatherGlyph, conditionKey } from '../components/Weather
 import { Icon } from '../components/Icon';
 import { Button, SectionTitle, Sheet, Skeleton, SourceBadge, Toast } from '../components/ui';
 import { canRun3D } from '../lib/connectivity';
+import { DashboardTour } from '../components/DashboardTour';
 
 // If the chunk can't load (e.g. offline before first use) fall back to the
 // static gradient rather than an error.
@@ -162,6 +163,14 @@ export default function Home() {
 
   const threeDAllowed = canRun3D() && !settings.dataSaver;
   const hasLastWatered = Boolean(lastWatered && !Number.isNaN(Date.parse(lastWatered)));
+  const [showTour, setShowTour] = useState(false);
+
+  useEffect(() => {
+    if (!settings.dashboardTourSeen && profile) {
+      const timer = window.setTimeout(() => setShowTour(true), 500);
+      return () => window.clearTimeout(timer);
+    }
+  }, [profile, settings.dashboardTourSeen]);
 
   const advice = useMemo(() => {
     if (!weather || !profile || profile.crops.length === 0 || !hasLastWatered) return null;
@@ -249,6 +258,7 @@ export default function Home() {
       </header>
 
       <div className="mx-auto max-w-lg px-4">
+        <DashboardTour open={showTour} onClose={() => setShowTour(false)} />
         {/* ---------------- irrigation advice (THE core card) -------------- */}
         <div className="mt-4">
           {weatherLoading && !weather ? (

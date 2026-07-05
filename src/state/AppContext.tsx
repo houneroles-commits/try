@@ -24,6 +24,7 @@ const DEFAULT_SETTINGS: Settings = {
   dataSaver: false,
   voiceReplies: false,
   onboarded: false,
+  dashboardTourSeen: false,
 };
 
 interface AppState {

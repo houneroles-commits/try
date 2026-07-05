@@ -37,6 +37,7 @@ export interface Settings {
   dataSaver: boolean;
   voiceReplies: boolean;
   onboarded: boolean;
+  dashboardTourSeen?: boolean;
 }
 
 export interface CurrentWeather {

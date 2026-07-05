@@ -271,5 +271,15 @@
     "body": "Opens instantly, works without signal.",
     "install": "Install",
     "dismiss": "Not now"
+  },
+  "tour": {
+    "welcomeTitle": "Welcome to your farm dashboard",
+    "welcomeBody": "This screen gives you the main weather and irrigation guidance for the day. Start here for quick decisions before you head to the field.",
+    "adviceTitle": "Your irrigation advice",
+    "adviceBody": "The main card shows whether you should water now, wait, or skip because rain is likely.",
+    "quickLogTitle": "Quick log",
+    "quickLogBody": "Use quick log to save rain, watering, or harvest entries quickly when you are busy in the field.",
+    "recordsTitle": "Keep a simple record",
+    "recordsBody": "Your records build a history you can review later and export as a CSV file when you want to share or analyse them."
   }
 }
