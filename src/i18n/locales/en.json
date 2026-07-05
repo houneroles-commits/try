@@ -55,7 +55,11 @@
     "show3d": "Scene on",
     "hide3d": "Scene off",
     "setupFarm": "Set up your farm",
-    "setupFarmHint": "Tell Lima your crops and soil for advice made for you."
+    "setupFarmHint": "Tell Lima your crops and soil for advice made for you.",
+    "needsLastWatered": "We need one more detail",
+    "needsLastWateredHint": "Tell us when you last watered or had a good soaking rain so Lima can give a real recommendation.",
+    "setLastWatered": "Set last watering",
+    "quickLogHint": "Quick log saves a simple record for rain, watering, or harvest. Use the detailed entry for dates, notes, and CSV export."
   },
   "advice": {
     "title": "Should I water?",
@@ -136,7 +140,9 @@
     "plantingDate": "Planting date (optional)",
     "calculate": "Get advice",
     "result": "Advice",
-    "assumptions": "Uses a simple daily water budget: crop use (ET₀ × Kc) minus effective rain, compared to what your soil can hold. It is guidance, not a guarantee — always check your soil by hand too."
+    "assumptions": "Uses a simple daily water budget: crop use (ET₀ × Kc) minus effective rain, compared to what your soil can hold. It is guidance, not a guarantee — always check your soil by hand too.",
+    "needsLastWatered": "Add your last watering date first",
+    "needsLastWateredHint": "Lima needs to know when the soil was last watered or soaked by rain before it can estimate the next irrigation."
   },
   "calendar": {
     "title": "Season calendar",
@@ -149,7 +155,9 @@
     "plantedOn": "Planted {{date}}",
     "setPlantingDate": "Set planting date",
     "noCrops": "No crops in your profile yet",
-    "monthsShort": ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+    "monthsShort": ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+    "recommendation": "A good planting window for {{crop}} is around {{date}}.",
+    "useRecommendedDate": "Use this date"
   },
   "records": {
     "title": "Records",
@@ -163,7 +171,17 @@
     "whichCrop": "Which crop?",
     "addRecord": "Add record",
     "history": "History",
-    "deleted": "Record removed"
+    "deleted": "Record removed",
+    "logGuide": "Use quick log for fast entries or detailed entry for dates, notes, and CSV export.",
+    "addDetailedEntry": "Detailed entry",
+    "detailTitle": "Add a record",
+    "selectKind": "What happened?",
+    "entryDate": "Date",
+    "entryAmount": "Amount",
+    "cropLabel": "Crop",
+    "entryNote": "Notes",
+    "notePlaceholder": "Add a note for your records",
+    "saveEntry": "Save record"
   },
   "assistant": {
     "title": "Assistant",
@@ -175,7 +193,7 @@
     "photoDiagnosis": "Check a sick plant",
     "analyzing": "Looking at your photo…",
     "thinking": "Thinking…",
-    "demoNote": "Sample answer — add an API key for live answers",
+    "demoNote": "Demo reply — live assistant is unavailable",
     "speakReply": "Read replies aloud",
     "voiceUnsupported": "Voice input is not supported in this browser.",
     "offlineNote": "You are offline. The assistant needs a connection.",

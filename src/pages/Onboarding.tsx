@@ -22,7 +22,7 @@ export default function Onboarding() {
   );
   const [crops, setCrops] = useState<CropId[]>(profile?.crops ?? []);
   const [soil, setSoil] = useState<SoilId>(profile?.soil ?? 'loam');
-  const [sizeHa, setSizeHa] = useState(profile?.fieldSizeHa ?? 1);
+  const [sizeHa, setSizeHa] = useState(profile?.fieldSizeHa ? String(profile.fieldSizeHa) : '');
   const [gpsBusy, setGpsBusy] = useState(false);
   const [gpsError, setGpsError] = useState(false);
   const [query, setQuery] = useState('');
@@ -35,7 +35,7 @@ export default function Onboarding() {
         location,
         crops: crops.length > 0 ? crops : ['maize'],
         soil,
-        fieldSizeHa: sizeHa || 1,
+        fieldSizeHa: parseFloat(sizeHa) || 1,
         plantingDates: profile?.plantingDates ?? {},
         createdAt: profile?.createdAt ?? new Date().toISOString(),
       });
@@ -215,7 +215,8 @@ export default function Onboarding() {
             step={0.1}
             className={inputCls}
             value={sizeHa}
-            onChange={(e) => setSizeHa(parseFloat(e.target.value) || 0)}
+            placeholder="1.0"
+            onChange={(e) => setSizeHa(e.target.value)}
           />
         </Field>
         <Field label={t('onboarding.nameLabel')}>

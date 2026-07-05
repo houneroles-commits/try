@@ -17,10 +17,10 @@ export default function Irrigation() {
   const [crop, setCrop] = useState<CropId>(profile?.crops[0] ?? 'maize');
   const [soil, setSoil] = useState<SoilId>(profile?.soil ?? 'loam');
   const [sizeHa, setSizeHa] = useState<number>(profile?.fieldSizeHa ?? 1);
-  const [watered, setWatered] = useState<string>(lastWatered.slice(0, 10));
+  const [watered, setWatered] = useState<string>(lastWatered ? lastWatered.slice(0, 10) : '');
 
   const advice = useMemo(() => {
-    if (!weather) return null;
+    if (!weather || !watered) return null;
     return adviseIrrigation({
       crop,
       soil,
@@ -47,11 +47,20 @@ export default function Irrigation() {
       <p className="text-sm text-ink-soft mb-5">{t('irrigation.subtitle')}</p>
 
       {/* live result at the top — updates as inputs change */}
-      {advice && (
+      {!watered ? (
+        <div className="mb-6 card p-4 border-2 border-sky/50">
+          <p className="text-sm font-semibold text-ink">
+            {t('irrigation.needsLastWatered')}
+          </p>
+          <p className="text-sm text-ink-soft mt-1">
+            {t('irrigation.needsLastWateredHint')}
+          </p>
+        </div>
+      ) : advice ? (
         <div className="mb-6">
           <AdviceCard advice={advice} fieldSizeHa={sizeHa || 0.1} />
         </div>
-      )}
+      ) : null}
 
       {/* crop picker */}
       <Field label={t('irrigation.crop')}>
@@ -109,10 +118,9 @@ export default function Irrigation() {
             value={watered}
             max={new Date().toISOString().slice(0, 10)}
             onChange={(e) => {
-              if (e.target.value) {
-                setWatered(e.target.value);
-                setLastWatered(new Date(e.target.value).toISOString());
-              }
+              const next = e.target.value;
+              setWatered(next);
+              setLastWatered(next ? new Date(next).toISOString() : '');
             }}
           />
         </Field>

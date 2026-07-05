@@ -161,9 +161,10 @@ export default function Home() {
   } = useApp();
 
   const threeDAllowed = canRun3D() && !settings.dataSaver;
+  const hasLastWatered = Boolean(lastWatered && !Number.isNaN(Date.parse(lastWatered)));
 
   const advice = useMemo(() => {
-    if (!weather || !profile || profile.crops.length === 0) return null;
+    if (!weather || !profile || profile.crops.length === 0 || !hasLastWatered) return null;
     const crop = profile.crops[0];
     return adviseIrrigation({
       crop,
@@ -174,7 +175,7 @@ export default function Home() {
       weather,
       records,
     });
-  }, [weather, profile, lastWatered, records]);
+  }, [weather, profile, lastWatered, records, hasLastWatered]);
 
   return (
     <div>
@@ -258,6 +259,25 @@ export default function Home() {
               fieldSizeHa={profile.fieldSizeHa}
               onAdjust={() => navigate('/irrigation')}
             />
+          ) : profile && !hasLastWatered ? (
+            <div className="card p-5 border-2 border-sky/50">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-2xl bg-sky/15 text-sky flex items-center justify-center shrink-0">
+                  <Icon name="drop" size={24} />
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-extrabold text-ink text-lg leading-tight">
+                    {t('home.needsLastWatered')}
+                  </h3>
+                  <p className="text-sm text-ink-soft mt-0.5">
+                    {t('home.needsLastWateredHint')}
+                  </p>
+                </div>
+              </div>
+              <Button full className="mt-4" icon="drop" onClick={() => navigate('/irrigation')}>
+                {t('home.setLastWatered')}
+              </Button>
+            </div>
           ) : (
             <div className="card p-5 border-2 border-clay/50">
               <div className="flex items-center gap-3">
@@ -288,6 +308,9 @@ export default function Home() {
         {/* ---------------- quick log ---------------- */}
         <SectionTitle>{t('home.quickLog')}</SectionTitle>
         <QuickLog />
+        <p className="mt-2 text-sm text-ink-soft">
+          {t('home.quickLogHint')}
+        </p>
 
         {/* ---------------- forecast ---------------- */}
         <SectionTitle

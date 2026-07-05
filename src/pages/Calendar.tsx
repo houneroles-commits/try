@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../state/AppContext';
@@ -6,6 +6,16 @@ import { CROPS, cropStatus, isPlantingMonth } from '../lib/season';
 import type { CropId } from '../lib/types';
 import { Icon } from '../components/Icon';
 import { EmptyState, Field, Sheet, inputCls, Button } from '../components/ui';
+
+function recommendedPlantingDate(crop: CropId): string {
+  const now = new Date();
+  const month = now.getMonth() + 1;
+  const plantingMonths = CROPS[crop].plantMonths;
+  const nextMonth = plantingMonths.find((m) => m >= month) ?? plantingMonths[0];
+  const target = new Date(now.getFullYear(), (nextMonth - 1), 1);
+  if (nextMonth < month) target.setFullYear(target.getFullYear() + 1);
+  return target.toISOString().slice(0, 10);
+}
 
 function MonthDots({ crop }: { crop: CropId }) {
   const { t } = useTranslation();
@@ -49,6 +59,11 @@ export default function Calendar() {
   const rain7 = weather
     ? Math.round(weather.daily.reduce((s, d) => s + d.rainMm, 0))
     : null;
+
+  const recommendedDate = useMemo(() => {
+    if (!dateFor) return '';
+    return recommendedPlantingDate(dateFor);
+  }, [dateFor]);
 
   const savePlanting = () => {
     if (!profile || !dateFor || !dateVal) return;
@@ -199,6 +214,23 @@ export default function Calendar() {
             onChange={(e) => setDateVal(e.target.value)}
           />
         </Field>
+        {dateFor && recommendedDate && (
+          <div className="mb-3 rounded-xl border border-sky/40 bg-sky/10 p-3">
+            <p className="text-sm font-semibold text-ink">
+              {t('calendar.recommendation', {
+                crop: t(`crops.${dateFor}`),
+                date: new Date(recommendedDate).toLocaleDateString(i18n.language, {
+                  day: 'numeric',
+                  month: 'short',
+                  year: 'numeric',
+                }),
+              })}
+            </p>
+            <button className="mt-2 text-sm font-bold text-sky" onClick={() => setDateVal(recommendedDate)}>
+              {t('calendar.useRecommendedDate')}
+            </button>
+          </div>
+        )}
         <Button full onClick={savePlanting} icon="check">
           {t('common.save')}
         </Button>

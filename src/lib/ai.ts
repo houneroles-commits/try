@@ -12,7 +12,7 @@ import type { ChatMsg, FarmProfile, WeatherBundle } from './types';
 import { demoChatReply, demoDiagnosis } from './demo';
 
 const env = (import.meta as any).env ?? {};
-const API_BASE: string = env.VITE_API_BASE ?? '';
+const API_BASE: string = env.VITE_API_BASE ?? 'http://localhost:8790';
 const API_KEY: string = env.VITE_ANTHROPIC_API_KEY ?? '';
 const MODEL: string = env.VITE_ANTHROPIC_MODEL ?? 'claude-opus-4-8';
 
@@ -96,14 +96,19 @@ export async function chat(
   }
 
   if (mode === 'proxy') {
-    const res = await fetch(`${API_BASE}/api/chat`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ system, messages: historyToApi(history) }),
-    });
-    if (!res.ok) throw new Error('proxy ' + res.status);
-    const json = await res.json();
-    return { text: json.text, demo: !!json.demo };
+    try {
+      const res = await fetch(`${API_BASE}/api/chat`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ system, messages: historyToApi(history) }),
+      });
+      if (!res.ok) throw new Error('proxy ' + res.status);
+      const json = await res.json();
+      return { text: json.text, demo: !!json.demo };
+    } catch {
+      const last = history[history.length - 1]?.text ?? '';
+      return { text: demoChatReply(last, language), demo: true };
+    }
   }
 
   const client = await directClient();
@@ -140,14 +145,18 @@ export async function diagnosePhoto(
     'What is wrong with this plant? Diagnose likely disease or pest and tell me what to do.';
 
   if (mode === 'proxy') {
-    const res = await fetch(`${API_BASE}/api/diagnose`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ system, image: imageBase64, mediaType, prompt }),
-    });
-    if (!res.ok) throw new Error('proxy ' + res.status);
-    const json = await res.json();
-    return { text: json.text, demo: !!json.demo };
+    try {
+      const res = await fetch(`${API_BASE}/api/diagnose`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ system, image: imageBase64, mediaType, prompt }),
+      });
+      if (!res.ok) throw new Error('proxy ' + res.status);
+      const json = await res.json();
+      return { text: json.text, demo: !!json.demo };
+    } catch {
+      return { text: demoDiagnosis(language), demo: true };
+    }
   }
 
   const client = await directClient();

@@ -56,7 +56,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     load(KEYS.records, [] as FarmRecord[]),
   );
   const [lastWatered, setLastWateredState] = useState<string>(() =>
-    load(KEYS.lastWatered, new Date(Date.now() - 3 * 86400000).toISOString()),
+    load(KEYS.lastWatered, ''),
   );
   const [weather, setWeather] = useState<WeatherBundle | null>(null);
   const [weatherLoading, setWeatherLoading] = useState(true);

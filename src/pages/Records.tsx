@@ -4,9 +4,9 @@ import { useNavigate } from 'react-router-dom';
 import { useApp } from '../state/AppContext';
 import { downloadCSV } from '../lib/records';
 import { CROPS } from '../lib/season';
-import type { RecordKind } from '../lib/types';
+import type { CropId, RecordKind } from '../lib/types';
 import { Icon, type IconName } from '../components/Icon';
-import { Button, EmptyState, Sheet, Toast } from '../components/ui';
+import { Button, EmptyState, Field, Sheet, Toast, inputCls } from '../components/ui';
 
 const KIND_ICON: Record<RecordKind, IconName> = {
   rain: 'rain',
@@ -20,6 +20,12 @@ export default function Records() {
   const { records, addRecord, deleteRecord, profile } = useApp();
   const [kind, setKind] = useState<RecordKind | null>(null);
   const [toast, setToast] = useState('');
+  const [sheetOpen, setSheetOpen] = useState(false);
+  const [formKind, setFormKind] = useState<RecordKind>('irrigation');
+  const [formDate, setFormDate] = useState(new Date().toISOString().slice(0, 10));
+  const [formAmount, setFormAmount] = useState('5');
+  const [formCrop, setFormCrop] = useState<CropId | ''>(profile?.crops[0] ?? '');
+  const [formNote, setFormNote] = useState('');
 
   const sorted = records.slice().sort((a, b) => b.date.localeCompare(a.date));
   const amounts = kind === 'harvest' ? [5, 10, 25, 50, 100] : [2, 5, 10, 20, 30];
@@ -33,6 +39,23 @@ export default function Records() {
       crop: kind === 'harvest' ? profile?.crops[0] : undefined,
     });
     setKind(null);
+    setToast(t('home.logged'));
+    setTimeout(() => setToast(''), 1800);
+  };
+
+  const saveDetailedEntry = () => {
+    const amount = Number(formAmount);
+    if (!formDate || !Number.isFinite(amount) || amount <= 0) return;
+    addRecord({
+      kind: formKind,
+      date: formDate,
+      amount,
+      crop: formKind === 'harvest' && formCrop ? formCrop : undefined,
+      note: formNote.trim() || undefined,
+    });
+    setSheetOpen(false);
+    setFormAmount('5');
+    setFormNote('');
     setToast(t('home.logged'));
     setTimeout(() => setToast(''), 1800);
   };
@@ -59,6 +82,13 @@ export default function Records() {
             <Icon name="download" size={20} />
           </button>
         )}
+      </div>
+
+      <div className="flex items-center justify-between mb-3">
+        <p className="text-sm font-semibold text-ink-soft">{t('records.logGuide')}</p>
+        <Button variant="secondary" onClick={() => setSheetOpen(true)}>
+          {t('records.addDetailedEntry')}
+        </Button>
       </div>
 
       {/* add buttons — 2 taps total: pick kind, pick amount */}
@@ -134,6 +164,44 @@ export default function Records() {
           ))}
         </div>
       )}
+
+      <Sheet open={sheetOpen} onClose={() => setSheetOpen(false)} title={t('records.detailTitle')}>
+        <Field label={t('records.selectKind')}>
+          <div className="grid grid-cols-3 gap-2">
+            {(['rain', 'irrigation', 'harvest'] as RecordKind[]).map((k) => (
+              <button
+                key={k}
+                onClick={() => setFormKind(k)}
+                className={`tap card py-3 text-sm font-bold ${formKind === k ? 'border-2 border-clay bg-clay-soft/30' : ''}`}
+              >
+                {t(`records.${k}`)}
+              </button>
+            ))}
+          </div>
+        </Field>
+        <Field label={t('records.entryDate')}>
+          <input type="date" className={inputCls} value={formDate} onChange={(e) => setFormDate(e.target.value)} />
+        </Field>
+        <Field label={t('records.entryAmount')}>
+          <input type="number" min="0" step="0.1" className={inputCls} value={formAmount} onChange={(e) => setFormAmount(e.target.value)} />
+        </Field>
+        {formKind === 'harvest' && (
+          <Field label={t('records.cropLabel')}>
+            <select className={inputCls} value={formCrop} onChange={(e) => setFormCrop(e.target.value as CropId)}>
+              <option value="">{t('records.cropLabel')}</option>
+              {profile?.crops.map((c) => (
+                <option key={c} value={c}>{t(`crops.${c}`)}</option>
+              ))}
+            </select>
+          </Field>
+        )}
+        <Field label={t('records.entryNote')}>
+          <textarea className={inputCls} rows={3} value={formNote} onChange={(e) => setFormNote(e.target.value)} placeholder={t('records.notePlaceholder')} />
+        </Field>
+        <Button full onClick={saveDetailedEntry} icon="check">
+          {t('records.saveEntry')}
+        </Button>
+      </Sheet>
 
       <Sheet
         open={kind !== null}
