@@ -10,6 +10,7 @@
 import webpush from 'web-push';
 import { loadUsers, saveUsers } from './store.js';
 import { sendSMS } from './sms.js';
+import { sendWhatsApp, whatsappMode } from './whatsapp.js';
 import { ALERT_TEXTS, PUSH_TITLES } from './messages.js';
 
 const RAIN_MM_THRESHOLD = Number(process.env.ALERT_RAIN_MM ?? 10);
@@ -68,9 +69,16 @@ export async function runAlertSweep(verbose = false) {
       const text = ALERT_TEXTS[lang](mm);
 
       if (user.phone) {
-        await sendSMS(user.phone, text).catch((e) =>
-          console.error('[alerts] sms failed:', e.message),
-        );
+        // Prefer WhatsApp when Twilio is live; otherwise fall back to SMS.
+        if (whatsappMode() === 'live') {
+          await sendWhatsApp(user.phone, text).catch((e) =>
+            console.error('[alerts] whatsapp failed:', e.message),
+          );
+        } else {
+          await sendSMS(user.phone, text).catch((e) =>
+            console.error('[alerts] sms failed:', e.message),
+          );
+        }
       }
       if (pushReady && user.subscription) {
         await webpush

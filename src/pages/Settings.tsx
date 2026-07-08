@@ -67,9 +67,9 @@ export default function Settings() {
   );
   const [confirmReset, setConfirmReset] = useState(false);
 
-  const flash = (msg: string) => {
+  const flash = (msg: string, ms = 2000) => {
     setToast(msg);
-    setTimeout(() => setToast(''), 2000);
+    setTimeout(() => setToast(''), ms);
   };
 
   const saveAlerts = async (prefs: AlertPrefs) => {
@@ -81,7 +81,7 @@ export default function Settings() {
     }
     try {
       const subscription = prefs.optIn ? await subscribePush() : null;
-      await fetch(`${API_BASE}/api/alerts/optin`, {
+      const res = await fetch(`${API_BASE}/api/alerts/optin`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -93,9 +93,13 @@ export default function Settings() {
           subscription,
         }),
       });
-      flash(t('settings.alertsSaved'));
-    } catch {
-      flash(t('settings.alertsSaved'));
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || 'send_failed');
+      if (data.whatsapp === 'sent') flash(t('settings.alertsWhatsappSent'), 4000);
+      else if (data.whatsapp === 'simulated') flash(t('settings.alertsSimulated'), 4000);
+      else flash(t('settings.alertsSaved'));
+    } catch (e) {
+      flash(`${t('settings.alertsFailed')}: ${(e as Error).message}`, 6000);
     }
   };
 

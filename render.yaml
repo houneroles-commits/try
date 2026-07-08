@@ -1,0 +1,35 @@
+# Render Blueprint for the Lima backend (the WhatsApp/AI server).
+# In Render: New → Blueprint → connect this repo → it reads this file.
+# Secret keys (sync: false) are NOT stored here — Render prompts for them.
+services:
+  - type: web
+    name: lima-server
+    runtime: node
+    rootDir: server
+    plan: free
+    buildCommand: npm install
+    startCommand: node index.js
+    healthCheckPath: /api/health
+    envVars:
+      # --- secrets: paste these in the Render dashboard when prompted ---
+      - key: GROQ_API_KEY
+        sync: false
+      - key: TWILIO_ACCOUNT_SID
+        sync: false
+      - key: TWILIO_AUTH_TOKEN
+        sync: false
+      - key: AT_API_KEY
+        sync: false
+      - key: OFFICER_WHATSAPP        # optional (human handoff); leave blank if unused
+        sync: false
+      # --- non-secret defaults (safe to keep here) ---
+      - key: GROQ_MODEL
+        value: llama-3.3-70b-versatile
+      - key: GROQ_VISION_MODEL
+        value: meta-llama/llama-4-scout-17b-16e-instruct
+      - key: TWILIO_WHATSAPP_FROM
+        value: whatsapp:+14155238886
+      - key: AT_USERNAME
+        value: sandbox
+      - key: NODE_VERSION
+        value: "20"
