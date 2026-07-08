@@ -8,50 +8,50 @@
    All pairings checked for WCAG AA (outdoor readability first).
    ============================================================ */
 :root {
-  /* canvas */
-  --c-bg: 245 250 255;         /* pale blue        #F5FAFF */
-  --c-surface: 255 255 255;    /* card             #FFFFFF */
-  --c-surface-2: 232 241 252;  /* inset / chip     #E8F1FC */
-  /* grounding blue */
-  --c-soil: 19 76 118;         /* deep blue        #134E76 */
-  --c-umber: 40 104 160;       /* mid blue         #2868A0 */
+  /* canvas — warm cream paper */
+  --c-bg: 250 245 237;         /* cream            #FAF5ED */
+  --c-surface: 255 252 247;    /* card             #FFFCF7 */
+  --c-surface-2: 240 231 218;  /* inset / chip      #F0E7DA */
+  /* grounding — espresso & terracotta (hero gradient uses these) */
+  --c-soil: 46 32 22;          /* espresso         #2E2016 */
+  --c-umber: 138 74 43;        /* terracotta-brown #8A4A2B */
   /* text */
-  --c-ink: 19 43 64;           /* near-black blue  #132B40 */
-  --c-ink-soft: 82 112 138;    /* secondary text   #52708A */
-  --c-ink-faint: 115 137 160;  /* hints            #7389A0 */
-  /* primary accent */
-  --c-clay: 35 118 211;        /* strong blue      #2376D3 */
-  --c-clay-strong: 23 94 184;  /* pressed / small text #175EA8 */
-  --c-clay-soft: 214 232 255;  /* tint background  #D6E8FF */
-  --c-on-clay: 255 255 255;   /* text on blue     #FFFFFF */
+  --c-ink: 38 28 20;           /* near-black brown #261C14 */
+  --c-ink-soft: 107 88 72;     /* secondary        #6B5848 */
+  --c-ink-faint: 150 130 112;  /* hints            #968270 */
+  /* primary accent — burnt terracotta / clay */
+  --c-clay: 194 90 43;         /* terracotta       #C25A2B */
+  --c-clay-strong: 155 66 28;  /* pressed / small  #9B421C */
+  --c-clay-soft: 244 226 210;  /* tint background  #F4E2D2 */
+  --c-on-clay: 255 250 245;    /* text on clay     #FFFAF5 */
   /* supporting */
-  --c-sun: 245 180 0;          /* warm accent      #F5B400 */
-  --c-sky: 66 153 225;         /* water / rain     #4299E1 */
+  --c-sun: 224 160 46;         /* golden sun       #E0A02E */
+  --c-sky: 74 137 150;         /* water / rain     #4A8996 */
   /* genuine warnings ONLY */
-  --c-danger: 220 38 38;       /* #DC2626 */
-  --c-on-danger: 255 245 245;
+  --c-danger: 200 48 38;       /* #C83026 */
+  --c-on-danger: 255 245 243;
   /* hairlines */
-  --c-line: 215 228 242;       /* #D7E4F2 */
+  --c-line: 229 216 199;       /* #E5D8C7 */
 }
 
 .dark {
-  --c-bg: 8 24 38;
-  --c-surface: 14 31 45;
-  --c-surface-2: 22 41 59;
-  --c-soil: 153 197 241;
-  --c-umber: 113 168 223;
-  --c-ink: 240 247 255;
-  --c-ink-soft: 184 210 233;
-  --c-ink-faint: 138 163 190;
-  --c-clay: 90 167 255;
-  --c-clay-strong: 132 191 255;
-  --c-clay-soft: 28 58 90;
-  --c-on-clay: 4 18 32;
-  --c-sun: 255 204 92;
-  --c-sky: 92 167 255;
-  --c-danger: 255 115 115;
-  --c-on-danger: 43 10 10;
-  --c-line: 40 63 87;
+  --c-bg: 26 20 15;            /* espresso night   #1A140F */
+  --c-surface: 36 28 21;       /* #241C15 */
+  --c-surface-2: 48 37 28;     /* #30251C */
+  --c-soil: 30 22 16;          /* deep hero base */
+  --c-umber: 120 62 36;        /* terracotta-brown */
+  --c-ink: 242 233 222;        /* warm cream text  #F2E9DE */
+  --c-ink-soft: 200 184 168;
+  --c-ink-faint: 150 134 118;
+  --c-clay: 226 130 82;        /* lighter terracotta #E28252 */
+  --c-clay-strong: 240 165 120;
+  --c-clay-soft: 60 40 28;
+  --c-on-clay: 28 18 12;
+  --c-sun: 240 190 90;
+  --c-sky: 110 175 188;
+  --c-danger: 240 120 110;
+  --c-on-danger: 40 12 10;
+  --c-line: 62 49 38;
 }
 
 @layer base {
@@ -110,6 +110,29 @@ html.contrast {
   --c-clay-strong: 0 45 105;
   --c-clay-soft: 208 224 248;
   --c-line: 90 90 90;
+}
+
+/* Premium: faint dotted "paper" texture behind everything (very subtle). */
+body {
+  background-image: radial-gradient(rgb(var(--c-umber) / 0.05) 1px, transparent 1px);
+  background-size: 22px 22px;
+  background-attachment: fixed;
+}
+html.contrast body { background-image: none; } /* keep sunlight mode clean */
+
+/* Reusable soft radial highlight for hero / feature areas. */
+.glow-radial {
+  background:
+    radial-gradient(120% 90% at 15% 0%, rgb(var(--c-clay) / 0.35) 0%, transparent 55%),
+    radial-gradient(120% 90% at 100% 100%, rgb(var(--c-sun) / 0.20) 0%, transparent 50%);
+}
+
+/* Respect users who ask for less motion, and low-end/data-saver devices. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
 }
 
 /* Leaflet container needs explicit size; styled after lazy CSS import */

@@ -211,6 +211,8 @@ export default function Home() {
             }}
           />
         )}
+        {/* soft premium glow over the hero */}
+        <div className="absolute inset-0 glow-radial opacity-70 pointer-events-none" aria-hidden="true" />
         <div className="relative px-5 pt-8 pb-6">
           <div className="flex items-start justify-between">
             <div>
@@ -218,7 +220,7 @@ export default function Home() {
                 {t(greetKey())}
                 {profile?.name ? `, ${profile.name}` : ''}
               </p>
-              <h1 className="text-3xl font-extrabold tracking-tight text-bg dark:text-ink">
+              <h1 className="text-4xl font-display font-bold tracking-tight text-bg dark:text-ink">
                 {t('app.name')}
               </h1>
               <p className="text-sm text-bg/75 dark:text-ink/70 font-medium">
@@ -270,11 +272,13 @@ export default function Home() {
           {weatherLoading && !weather ? (
             <Skeleton className="h-44" />
           ) : advice && profile ? (
-            <AdviceCard
-              advice={advice}
-              fieldSizeHa={profile.fieldSizeHa}
-              onAdjust={() => navigate('/irrigation')}
-            />
+            <div className="rounded-xl2 shadow-glow">
+              <AdviceCard
+                advice={advice}
+                fieldSizeHa={profile.fieldSizeHa}
+                onAdjust={() => navigate('/irrigation')}
+              />
+            </div>
           ) : profile && !hasLastWatered ? (
             <div className="card p-5 border-2 border-sky/50">
               <div className="flex items-center gap-3">
@@ -370,17 +374,23 @@ export default function Home() {
 
         {/* ---------------- farm tools ---------------- */}
         <SectionTitle>{t('tools.title')}</SectionTitle>
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-2 gap-2.5">
           {(
             [
-              ['/prices', 'pin', 'tools.pricesTitle', 'tools.pricesSub'],
-              ['/fertilizer', 'sprout', 'tools.fertilizerTitle', 'tools.fertilizerSub'],
-              ['/pests', 'alert', 'tools.pestsTitle', 'tools.pestsSub'],
-              ['/finance', 'chart', 'tools.financeTitle', 'tools.financeSub'],
+              ['/prices', 'pin', 'tools.pricesTitle', 'tools.pricesSub', 'bg-clay-soft text-clay-strong'],
+              ['/fertilizer', 'sprout', 'tools.fertilizerTitle', 'tools.fertilizerSub', 'bg-sun/25 text-sun'],
+              ['/pests', 'alert', 'tools.pestsTitle', 'tools.pestsSub', 'bg-danger/12 text-danger'],
+              ['/finance', 'chart', 'tools.financeTitle', 'tools.financeSub', 'bg-sky/15 text-sky'],
             ] as const
-          ).map(([to, icon, title, sub]) => (
-            <Link key={to} to={to} className="card tap flex flex-col gap-1.5 p-4 active:bg-surface-2">
-              <span className="text-clay-strong"><Icon name={icon} size={22} /></span>
+          ).map(([to, icon, title, sub, tint]) => (
+            <Link
+              key={to}
+              to={to}
+              className="card tap flex flex-col gap-2 p-4 bg-gradient-to-br from-surface to-surface-2/50 active:brightness-95"
+            >
+              <span className={`w-10 h-10 rounded-xl flex items-center justify-center ${tint}`}>
+                <Icon name={icon} size={20} />
+              </span>
               <span className="font-bold text-ink text-sm leading-tight">{t(title)}</span>
               <span className="text-[11px] text-ink-soft leading-tight">{t(sub)}</span>
             </Link>

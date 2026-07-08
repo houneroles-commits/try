@@ -47,10 +47,14 @@ export default {
           'Noto Sans',
           'sans-serif',
         ],
+        // Editorial serif for headings — no download, works offline.
+        display: ['ui-serif', 'Georgia', 'Cambria', '"Times New Roman"', 'serif'],
       },
       boxShadow: {
         card: '0 1px 2px rgb(60 35 20 / 0.06), 0 4px 16px -6px rgb(60 35 20 / 0.10)',
         float: '0 8px 30px -8px rgb(40 22 10 / 0.35)',
+        // Warm terracotta glow for hero cards / primary buttons.
+        glow: '0 14px 40px -12px rgb(var(--c-clay) / 0.55)',
       },
     },
   },

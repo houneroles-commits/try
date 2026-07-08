@@ -16,7 +16,7 @@ interface BtnProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const VARIANTS: Record<Variant, string> = {
   primary:
-    'bg-clay text-on-clay active:bg-clay-strong shadow-card font-semibold',
+    'bg-gradient-to-br from-clay to-clay-strong text-on-clay active:brightness-95 shadow-glow font-semibold',
   secondary:
     'bg-surface-2 text-ink active:bg-line/80 border border-line font-semibold',
   ghost: 'bg-transparent text-clay-strong active:bg-clay-soft/40 font-semibold',
@@ -83,7 +83,8 @@ export function SectionTitle({
 }) {
   return (
     <div className="flex items-center justify-between mt-6 mb-2 px-1">
-      <h2 className="text-sm font-bold uppercase tracking-wider text-ink-soft">
+      <h2 className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-ink-soft">
+        <span className="inline-block h-4 w-1 rounded-full bg-gradient-to-b from-clay to-sun" aria-hidden />
         {children}
       </h2>
       {action}
