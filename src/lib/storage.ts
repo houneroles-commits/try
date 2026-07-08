@@ -10,6 +10,7 @@ export const KEYS = {
   chat: NS + 'chat',
   lastWatered: NS + 'lastWatered',
   installDismissed: NS + 'installDismissed',
+  finances: NS + 'finances',
 } as const;
 
 export function load<T>(key: string, fallback: T): T {

@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useApp } from '../state/AppContext';
 import { adviseIrrigation } from '../lib/irrigation';
 import { cropStatus, CROPS } from '../lib/season';
+import { STAGE_TIP_KEY } from '../lib/farmdata';
 import type { CropId, RecordKind } from '../lib/types';
 import { AdviceCard } from '../components/AdviceCard';
 import { ForecastStrip, WeatherGlyph, conditionKey } from '../components/WeatherBits';
@@ -113,7 +114,7 @@ function SeasonSnapshot() {
           <Link
             key={c}
             to="/calendar"
-            className="card shrink-0 min-w-[150px] p-3 active:bg-surface-2"
+            className="card shrink-0 min-w-[210px] max-w-[230px] p-3 active:bg-surface-2"
           >
             <div className="flex items-center gap-2">
               <span className="text-2xl" aria-hidden>
@@ -134,12 +135,17 @@ function SeasonSnapshot() {
               </div>
             </div>
             {status && (
-              <div className="mt-2 h-1.5 rounded-full bg-surface-2 overflow-hidden">
-                <div
-                  className="h-full rounded-full bg-clay"
-                  style={{ width: `${Math.round(status.progress * 100)}%` }}
-                />
-              </div>
+              <>
+                <div className="mt-2 h-1.5 rounded-full bg-surface-2 overflow-hidden">
+                  <div
+                    className="h-full rounded-full bg-clay"
+                    style={{ width: `${Math.round(status.progress * 100)}%` }}
+                  />
+                </div>
+                <p className="mt-2 text-[11px] leading-snug text-ink-soft">
+                  💡 {t(STAGE_TIP_KEY[status.stage.key])}
+                </p>
+              </>
             )}
           </Link>
         );
@@ -361,6 +367,25 @@ export default function Home() {
             <SeasonSnapshot />
           </>
         )}
+
+        {/* ---------------- farm tools ---------------- */}
+        <SectionTitle>{t('tools.title')}</SectionTitle>
+        <div className="grid grid-cols-2 gap-2">
+          {(
+            [
+              ['/prices', 'pin', 'tools.pricesTitle', 'tools.pricesSub'],
+              ['/fertilizer', 'sprout', 'tools.fertilizerTitle', 'tools.fertilizerSub'],
+              ['/pests', 'alert', 'tools.pestsTitle', 'tools.pestsSub'],
+              ['/finance', 'chart', 'tools.financeTitle', 'tools.financeSub'],
+            ] as const
+          ).map(([to, icon, title, sub]) => (
+            <Link key={to} to={to} className="card tap flex flex-col gap-1.5 p-4 active:bg-surface-2">
+              <span className="text-clay-strong"><Icon name={icon} size={22} /></span>
+              <span className="font-bold text-ink text-sm leading-tight">{t(title)}</span>
+              <span className="text-[11px] text-ink-soft leading-tight">{t(sub)}</span>
+            </Link>
+          ))}
+        </div>
 
         {/* ---------------- records shortcut ---------------- */}
         <div className="mt-6 mb-4">

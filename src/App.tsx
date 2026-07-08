@@ -8,6 +8,10 @@ import Settings from './pages/Settings';
 import Irrigation from './pages/Irrigation';
 import Calendar from './pages/Calendar';
 import Records from './pages/Records';
+import Prices from './pages/Prices';
+import Fertilizer from './pages/Fertilizer';
+import Pests from './pages/Pests';
+import Finance from './pages/Finance';
 import Onboarding from './pages/Onboarding';
 import { Skeleton } from './components/ui';
 import { useApp } from './state/AppContext';
@@ -51,6 +55,10 @@ export default function App() {
         <Route path="/irrigation" element={<Irrigation />} />
         <Route path="/calendar" element={<Calendar />} />
         <Route path="/records" element={<Records />} />
+        <Route path="/prices" element={<Prices />} />
+        <Route path="/fertilizer" element={<Fertilizer />} />
+        <Route path="/pests" element={<Pests />} />
+        <Route path="/finance" element={<Finance />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Route>
     </Routes>
