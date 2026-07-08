@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import QRCode from 'qrcode';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../state/AppContext';
@@ -11,6 +12,14 @@ import { load, save } from '../lib/storage';
 import { subscribePush } from '../lib/push';
 
 const API_BASE: string = (import.meta as any).env?.VITE_API_BASE ?? '';
+
+// WhatsApp "scan to chat" link. Twilio sandbox needs the farmer to send
+// "join <code>" first — put YOUR sandbox code below (from the Twilio console,
+// e.g. "join lucky-tiger") so the QR pre-fills it. Override via env if you like.
+const env = (import.meta as any).env ?? {};
+const WA_NUMBER: string = env.VITE_WHATSAPP_NUMBER ?? '14155238886';
+const WA_JOIN: string = env.VITE_WHATSAPP_JOIN ?? 'join'; // e.g. 'join lucky-tiger'
+const WA_LINK = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(WA_JOIN)}`;
 
 function Toggle({
   checked,
@@ -66,6 +75,15 @@ export default function Settings() {
     load('lima.alerts', { phone: '', optIn: false }),
   );
   const [confirmReset, setConfirmReset] = useState(false);
+  const [showQR, setShowQR] = useState(false);
+  const [qrUrl, setQrUrl] = useState('');
+
+  // Generate the "scan to chat on WhatsApp" QR once (client-side, works offline).
+  useEffect(() => {
+    QRCode.toDataURL(WA_LINK, { margin: 1, width: 240 })
+      .then(setQrUrl)
+      .catch(() => setQrUrl(''));
+  }, []);
 
   const flash = (msg: string, ms = 2000) => {
     setToast(msg);
@@ -242,6 +260,49 @@ export default function Settings() {
             {t('settings.notifications')}
           </Button>
         )}
+
+        {/* Scan-to-chat-on-WhatsApp QR (collapsible) */}
+        <div className="mt-3 border-t border-line/60 pt-3">
+          <button
+            onClick={() => setShowQR((v) => !v)}
+            aria-expanded={showQR}
+            className="tap w-full flex items-center gap-3 text-left"
+          >
+            <Icon name="camera" size={19} className="text-clay-strong shrink-0" />
+            <span className="flex-1 font-bold text-ink text-sm">
+              {t('settings.scanWhatsapp')}
+            </span>
+            <Icon
+              name={showQR ? 'chevronDown' : 'chevronRight'}
+              size={16}
+              className="text-ink-faint"
+            />
+          </button>
+          {showQR && (
+            <div className="mt-3 flex flex-col items-center text-center">
+              {qrUrl ? (
+                <img
+                  src={qrUrl}
+                  alt="WhatsApp QR code"
+                  className="w-44 h-44 rounded-xl bg-white p-2 shadow-card"
+                />
+              ) : (
+                <p className="text-xs text-ink-faint py-10">…</p>
+              )}
+              <p className="text-xs text-ink-soft mt-2 max-w-[16rem]">
+                {t('settings.scanWhatsappHint')}
+              </p>
+              <a
+                href={WA_LINK}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs font-bold text-clay-strong mt-2 underline"
+              >
+                {t('settings.openWhatsapp')}
+              </a>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* data */}
