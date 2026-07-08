@@ -94,6 +94,24 @@
   .text-balance { text-wrap: balance; }
 }
 
+/* Accessibility: larger text scales every rem-based size app-wide */
+html.big-text { font-size: 112.5%; } /* 16px → 18px base */
+
+/* High-contrast "sunlight" mode — pure black-on-white, stronger hairlines,
+   for reading on cheap screens in bright sun. Overrides the color tokens. */
+html.contrast {
+  --c-bg: 255 255 255;
+  --c-surface: 255 255 255;
+  --c-surface-2: 232 232 232;
+  --c-ink: 0 0 0;
+  --c-ink-soft: 33 33 33;
+  --c-ink-faint: 64 64 64;
+  --c-clay: 0 71 158;
+  --c-clay-strong: 0 45 105;
+  --c-clay-soft: 208 224 248;
+  --c-line: 90 90 90;
+}
+
 /* Leaflet container needs explicit size; styled after lazy CSS import */
 .leaflet-container {
   border-radius: 1.25rem;

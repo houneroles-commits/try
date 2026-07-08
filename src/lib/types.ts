@@ -1,5 +1,6 @@
-export type Language = 'en' | 'zu' | 'st' | 'af';
+export type Language = 'en' | 'sw' | 'zu' | 'st' | 'af';
 export type ThemeMode = 'light' | 'dark' | 'system';
+export type TextSize = 'normal' | 'large';
 
 export type CropId =
   | 'maize'
@@ -38,6 +39,8 @@ export interface Settings {
   voiceReplies: boolean;
   onboarded: boolean;
   dashboardTourSeen?: boolean;
+  textSize?: TextSize;
+  highContrast?: boolean;
 }
 
 export interface CurrentWeather {

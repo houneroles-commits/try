@@ -8,6 +8,7 @@ import type { Language } from './types';
 
 const STT_LANG: Record<Language, string> = {
   en: 'en-ZA',
+  sw: 'sw-KE',
   zu: 'zu-ZA',
   st: 'st-ZA',
   af: 'af-ZA',

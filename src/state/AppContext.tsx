@@ -25,6 +25,8 @@ const DEFAULT_SETTINGS: Settings = {
   voiceReplies: false,
   onboarded: false,
   dashboardTourSeen: false,
+  textSize: 'normal',
+  highContrast: false,
 };
 
 interface AppState {
@@ -83,6 +85,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
     mq.addEventListener('change', apply);
     return () => mq.removeEventListener('change', apply);
   }, [settings.theme]);
+
+  // --- accessibility: bigger text + high-contrast "sunlight" mode ---------
+  useEffect(() => {
+    const el = document.documentElement;
+    el.classList.toggle('big-text', settings.textSize === 'large');
+    el.classList.toggle('contrast', !!settings.highContrast);
+  }, [settings.textSize, settings.highContrast]);
 
   // --- connectivity ------------------------------------------------------
   useEffect(() => {

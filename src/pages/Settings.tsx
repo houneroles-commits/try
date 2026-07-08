@@ -175,6 +175,41 @@ export default function Settings() {
         ))}
       </div>
 
+      {/* accessibility */}
+      <SectionTitle>{t('settings.accessibility')}</SectionTitle>
+      <div className="inline-flex w-full rounded-xl bg-surface-2 p-1">
+        {(
+          [
+            ['normal', 'settings.textNormal'],
+            ['large', 'settings.textLarge'],
+          ] as ['normal' | 'large', string][]
+        ).map(([size, label]) => (
+          <button
+            key={size}
+            aria-pressed={(settings.textSize ?? 'normal') === size}
+            onClick={() => updateSettings({ textSize: size })}
+            className={`tap flex-1 min-h-[44px] rounded-lg flex items-center justify-center gap-1.5 font-bold transition-colors ${
+              size === 'large' ? 'text-lg' : 'text-sm'
+            } ${
+              (settings.textSize ?? 'normal') === size
+                ? 'bg-surface text-ink shadow-card'
+                : 'text-ink-faint'
+            }`}
+          >
+            {t(label)}
+          </button>
+        ))}
+      </div>
+      <div className="card divide-y divide-line/60 mt-2">
+        <Toggle
+          icon="sun"
+          checked={!!settings.highContrast}
+          onChange={(v) => updateSettings({ highContrast: v })}
+          label={t('settings.sunlight')}
+          hint={t('settings.sunlightHint')}
+        />
+      </div>
+
       {/* farm profile */}
       <SectionTitle>{t('settings.profile')}</SectionTitle>
       <div className="card divide-y divide-line/60">
