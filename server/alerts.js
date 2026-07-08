@@ -51,7 +51,7 @@ export async function rain48h(lat, lon) {
 }
 
 export async function runAlertSweep(verbose = false) {
-  const users = loadUsers();
+  const users = await loadUsers();
   const optedIn = users.filter((u) => u.optIn && u.lat != null && u.lon != null);
   if (verbose) console.log(`[alerts] sweep: ${optedIn.length} opted-in subscriber(s)`);
   let sent = 0;
@@ -94,7 +94,7 @@ export async function runAlertSweep(verbose = false) {
       console.error('[alerts] subscriber failed:', e.message);
     }
   }
-  saveUsers(users);
+  await saveUsers(users);
   if (verbose) console.log(`[alerts] done — ${sent} alert(s) sent`);
   return { checked: optedIn.length, sent };
 }

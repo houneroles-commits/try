@@ -16,6 +16,7 @@ import { sendWhatsApp, whatsappMode, fetchTwilioMedia, normalizePhone } from './
 import { aiMode, aiModel, aiChat, aiVision, transcribeAudio, extractProfile } from './ai.js';
 import { isPriceQuery, detectCrop, priceContext } from './prices.js';
 import { initPush, runAlertSweep, startAlertScheduler, rain48h } from './alerts.js';
+import { initDb, dbEnabled } from './db.js';
 
 const PORT = process.env.PORT ?? 8790;
 
@@ -70,7 +71,7 @@ app.post('/api/alerts/optin', async (req, res) => {
   // normalizePhone(From)). The conversation store is keyed by "whatsapp:<num>".
   const normPhone = phone ? normalizePhone(phone) : '';
   const convKey = normPhone ? `whatsapp:${normPhone}` : '';
-  upsertUser({ phone: normPhone || undefined, optIn: !!optIn, lat, lon, language, subscription });
+  await upsertUser({ phone: normPhone || undefined, optIn: !!optIn, lat, lon, language, subscription });
   console.log(`[alerts] opt-${optIn ? 'in' : 'out'}: ${normPhone || 'push-only'}`);
 
   // Welcome the farmer on WhatsApp right away so they can see it works
@@ -79,8 +80,8 @@ app.post('/api/alerts/optin', async (req, res) => {
     try {
       const result = await sendWhatsApp(normPhone, WELCOME_MESSAGE);
       // Seed the conversation so the farmer's reply continues the intake.
-      resetConversation(convKey);
-      appendMessage(convKey, 'assistant', WELCOME_MESSAGE);
+      await resetConversation(convKey);
+      await appendMessage(convKey, 'assistant', WELCOME_MESSAGE);
       return res.json({
         ok: true,
         whatsapp: result.simulated ? 'simulated' : 'sent',
@@ -164,13 +165,13 @@ app.post('/api/whatsapp/incoming', async (req, res) => {
 
   // Let a farmer start over.
   if (/^(reset|restart|start over)$/i.test(text)) {
-    resetConversation(from);
+    await resetConversation(from);
     return twiml(res, "Okay, let's start over. Hello! I'm Lima, your farming assistant. What's your name?");
   }
 
   if (aiMode() === 'demo') return twiml(res, DEMO_REPLY);
 
-  const profile = getProfile(key);
+  const profile = await getProfile(key);
   let reply;
   let logText = text; // what we store in history for this turn
 
@@ -199,7 +200,7 @@ app.post('/api/whatsapp/incoming', async (req, res) => {
 
     // 3) Human handoff (only for text/voice, not photos)
     if (!reply && escalationRequested(text)) {
-      const esc = addEscalation({
+      await addEscalation({
         phone: key,
         name: profile.name || '',
         question: text,
@@ -223,18 +224,18 @@ app.post('/api/whatsapp/incoming', async (req, res) => {
       if (isPriceQuery(text)) {
         extra = priceContext(detectCrop(text) || detectCrop(profile.crop || ''));
       }
-      const history = getConversation(from);
+      const history = await getConversation(from);
       history.push({ role: 'user', content: text || 'Hello' });
       reply = await aiChat({ system: buildSystem(profile, extra), messages: history, maxTokens: 512 });
     }
 
     // Persist this turn.
-    appendMessage(from, 'user', logText || 'Hello');
-    appendMessage(from, 'assistant', reply);
+    await appendMessage(from, 'user', logText || 'Hello');
+    await appendMessage(from, 'assistant', reply);
 
     // 5) Learn/remember the farmer (only while their profile is incomplete).
     if (!(profile.name && profile.crop && profile.location)) {
-      const convo = getConversation(from)
+      const convo = (await getConversation(from))
         .map((m) => `${m.role}: ${m.content}`)
         .join('\n');
       const found = await extractProfile(convo);
@@ -243,7 +244,7 @@ app.post('/api/whatsapp/incoming', async (req, res) => {
         crop: profile.crop || found.crop || '',
         location: profile.location || found.location || '',
       };
-      if (merged.name || merged.crop || merged.location) saveProfile(key, merged);
+      if (merged.name || merged.crop || merged.location) await saveProfile(key, merged);
     }
   } catch (e) {
     console.error('[whatsapp in]', e.message);
@@ -258,7 +259,7 @@ app.post('/api/whatsapp/incoming', async (req, res) => {
 app.post('/api/sms/incoming', async (req, res) => {
   const { from, text } = req.body ?? {};
   console.log(`[sms in] ${from}: ${text}`);
-  const users = loadUsers();
+  const users = await loadUsers();
   const user = users.find((u) => u.phone === from);
   const { reply, action } = handleIncomingSms(from, text);
 
@@ -273,8 +274,8 @@ app.post('/api/sms/incoming', async (req, res) => {
       finalReply = 'Lima: weather service unavailable right now, try again later.';
     }
   }
-  if (action === 'optout' && user) upsertUser({ ...user, optIn: false });
-  if (action === 'optin') upsertUser({ phone: from, optIn: true, lat: user?.lat, lon: user?.lon, language: user?.language ?? 'en' });
+  if (action === 'optout' && user) await upsertUser({ ...user, optIn: false });
+  if (action === 'optin') await upsertUser({ phone: from, optIn: true, lat: user?.lat, lon: user?.lon, language: user?.language ?? 'en' });
 
   if (finalReply) await sendSMS(from, finalReply).catch(() => {});
   res.json({ ok: true });
@@ -286,6 +287,7 @@ app.get('/api/health', (_req, res) => {
     ai: aiMode(),
     sms: smsMode(),
     whatsapp: whatsappMode(),
+    db: dbEnabled() ? 'postgres' : 'files',
     push: !!process.env.VAPID_PUBLIC_KEY,
   });
 });
@@ -293,9 +295,13 @@ app.get('/api/health', (_req, res) => {
 /* ----------------------------------------------------------------- boot */
 initPush();
 startAlertScheduler();
+initDb()
+  .then((on) => on && console.log('[db] Postgres connected — schema ready'))
+  .catch((e) => console.error('[db] init failed (falling back to files):', e.message));
 app.listen(PORT, () => {
   console.log(`Lima server on http://localhost:${PORT}`);
   console.log(`  AI:   ${aiMode() === 'live' ? 'live (Groq ' + aiModel() + ')' : 'DEMO MODE (no GROQ_API_KEY)'}`);
   console.log(`  SMS:  ${smsMode()}`);
   console.log(`  WhatsApp: ${whatsappMode()} (Twilio)`);
+  console.log(`  Database: ${dbEnabled() ? 'PostgreSQL' : 'local JSON files'}`);
 });

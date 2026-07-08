@@ -22,6 +22,8 @@ services:
         sync: false
       - key: OFFICER_WHATSAPP        # optional (human handoff); leave blank if unused
         sync: false
+      - key: DATABASE_URL            # Neon Postgres connection string (persistent memory)
+        sync: false
       # --- non-secret defaults (safe to keep here) ---
       - key: GROQ_MODEL
         value: llama-3.3-70b-versatile
