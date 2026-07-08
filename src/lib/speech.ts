@@ -58,14 +58,46 @@ export function listen(
 }
 
 export function ttsSupported(): boolean {
-  return 'speechSynthesis' in window;
+  return 'speechSynthesis' in window || Boolean(API_BASE);
 }
 
-let currentUtterance: SpeechSynthesisUtterance | null = null;
+const API_BASE: string = (import.meta as any).env?.VITE_API_BASE ?? '';
 
+let currentUtterance: SpeechSynthesisUtterance | null = null;
+let currentAudio: HTMLAudioElement | null = null;
+
+// Prefer a natural ElevenLabs voice (via our server); fall back to the
+// browser's built-in voice when the server has no ElevenLabs key or fails.
 export function speak(text: string, language: Language, onDone?: () => void): void {
-  if (!ttsSupported()) return;
   stopSpeaking();
+  if (API_BASE) {
+    elevenSpeak(text, onDone).catch(() => browserSpeak(text, language, onDone));
+    return;
+  }
+  browserSpeak(text, language, onDone);
+}
+
+async function elevenSpeak(text: string, onDone?: () => void): Promise<void> {
+  const res = await fetch(`${API_BASE}/api/tts`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ text }),
+  });
+  if (!res.ok) throw new Error('tts ' + res.status); // e.g. 501 → fall back
+  const url = URL.createObjectURL(await res.blob());
+  const audio = new Audio(url);
+  currentAudio = audio;
+  const cleanup = () => {
+    URL.revokeObjectURL(url);
+    if (currentAudio === audio) currentAudio = null;
+  };
+  audio.onended = () => { cleanup(); onDone?.(); };
+  audio.onerror = () => { cleanup(); };
+  await audio.play(); // rejects on autoplay block → caller falls back
+}
+
+function browserSpeak(text: string, language: Language, onDone?: () => void): void {
+  if (!('speechSynthesis' in window)) return;
   const utter = new SpeechSynthesisUtterance(text);
   utter.lang = STT_LANG[language];
   utter.rate = 0.95;
@@ -81,10 +113,16 @@ export function speak(text: string, language: Language, onDone?: () => void): vo
 }
 
 export function stopSpeaking(): void {
-  if (ttsSupported()) speechSynthesis.cancel();
+  if ('speechSynthesis' in window) speechSynthesis.cancel();
   currentUtterance = null;
+  if (currentAudio) {
+    currentAudio.pause();
+    currentAudio = null;
+  }
 }
 
 export function isSpeaking(): boolean {
-  return ttsSupported() && speechSynthesis.speaking;
+  const synth = 'speechSynthesis' in window && speechSynthesis.speaking;
+  const audio = Boolean(currentAudio && !currentAudio.paused);
+  return synth || audio;
 }

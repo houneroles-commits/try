@@ -60,6 +60,35 @@ app.post('/api/diagnose', async (req, res) => {
   }
 });
 
+/* ----------------------------------------- Text-to-speech (ElevenLabs) */
+// The app posts { text } and gets back MP3 audio in a natural voice.
+// Without ELEVENLABS_API_KEY this returns 501 and the app falls back to the
+// browser's built-in voice.
+app.post('/api/tts', async (req, res) => {
+  const key = process.env.ELEVENLABS_API_KEY;
+  if (!key) return res.status(501).json({ error: 'tts_disabled' });
+  const voiceId = process.env.ELEVENLABS_VOICE_ID || '21m00Tcm4TlvDq8ikWAM';
+  const text = String(req.body?.text ?? '').trim().slice(0, 800); // cap to protect quota
+  if (!text) return res.status(400).json({ error: 'no_text' });
+  try {
+    const r = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {
+      method: 'POST',
+      headers: { 'xi-api-key': key, 'Content-Type': 'application/json', Accept: 'audio/mpeg' },
+      body: JSON.stringify({ text, model_id: 'eleven_multilingual_v2' }),
+    });
+    if (!r.ok) {
+      console.error('[tts]', r.status, (await r.text()).slice(0, 200));
+      return res.status(502).json({ error: 'tts_failed' });
+    }
+    res.setHeader('Content-Type', 'audio/mpeg');
+    res.setHeader('Cache-Control', 'no-store');
+    res.send(Buffer.from(await r.arrayBuffer()));
+  } catch (e) {
+    console.error('[tts]', e.message);
+    res.status(502).json({ error: 'tts_failed' });
+  }
+});
+
 /* ------------------------------------------------------------- Alerts */
 const WELCOME_MESSAGE =
   "Hello! I'm Lima, your personal AI farming assistant. To help you best, I'll ask a few quick questions. First — what's your name?";
@@ -288,6 +317,7 @@ app.get('/api/health', (_req, res) => {
     sms: smsMode(),
     whatsapp: whatsappMode(),
     db: dbEnabled() ? 'postgres' : 'files',
+    tts: process.env.ELEVENLABS_API_KEY ? 'elevenlabs' : 'browser',
     push: !!process.env.VAPID_PUBLIC_KEY,
   });
 });
