@@ -94,6 +94,9 @@
     "gpsDenied": "Haikuweza kupata mahali ulipo. Chagua mahali hapa chini.",
     "searchPlace": "Tafuta mji au kijiji…",
     "changeLocation": "Badilisha mahali",
+    "forecastLabel": "utabiri",
+    "playRadar": "Cheza rada",
+    "radarTime": "Muda wa rada",
     "conditions": {
       "clear": "Anga safi",
       "partly": "Mawingu kiasi",

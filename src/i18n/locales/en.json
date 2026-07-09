@@ -94,6 +94,9 @@
     "gpsDenied": "Could not get your location. Pick a place below.",
     "searchPlace": "Search town or village…",
     "changeLocation": "Change location",
+    "forecastLabel": "forecast",
+    "playRadar": "Play radar",
+    "radarTime": "Radar time",
     "conditions": {
       "clear": "Clear sky",
       "partly": "Partly cloudy",
