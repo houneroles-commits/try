@@ -135,6 +135,76 @@ html.contrast body { background-image: none; } /* keep sunlight mode clean */
   }
 }
 
+/* Social links (adapted from Uiverse.io by david-mohseni) — scoped to .socials */
+.socials {
+  display: inline-flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  justify-content: center;
+}
+.socials .icon {
+  position: relative;
+  background: #fff;
+  color: #333;
+  border-radius: 50%;
+  margin: 10px;
+  width: 50px;
+  height: 50px;
+  box-shadow: 0 10px 10px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+.socials .icon a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  color: inherit;
+}
+.socials .tooltip {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 14px;
+  background: #fff;
+  color: #fff;
+  padding: 5px 8px;
+  border-radius: 5px;
+  box-shadow: 0 10px 10px rgba(0, 0, 0, 0.1);
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+.socials .tooltip::before {
+  position: absolute;
+  content: "";
+  height: 8px;
+  width: 8px;
+  background: #fff;
+  bottom: -3px;
+  left: 50%;
+  transform: translate(-50%) rotate(45deg);
+  transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+.socials .icon:hover .tooltip {
+  top: -45px;
+  opacity: 1;
+  pointer-events: auto;
+}
+.socials .icon:hover { color: #fff; }
+.socials .facebook:hover,
+.socials .facebook:hover .tooltip,
+.socials .facebook:hover .tooltip::before { background: #1877f2; color: #fff; }
+.socials .x:hover,
+.socials .x:hover .tooltip,
+.socials .x:hover .tooltip::before { background: #000; color: #fff; }
+.socials .instagram:hover,
+.socials .instagram:hover .tooltip,
+.socials .instagram:hover .tooltip::before { background: #e4405f; color: #fff; }
+
 /* Leaflet container needs explicit size; styled after lazy CSS import */
 .leaflet-container {
   border-radius: 1.25rem;

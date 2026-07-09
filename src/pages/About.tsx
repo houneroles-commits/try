@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { Icon } from '../components/Icon';
 import { SectionTitle } from '../components/ui';
+import { SocialLinks } from '../components/SocialLinks';
 
 export default function About() {
   const { t } = useTranslation();
@@ -47,7 +48,8 @@ export default function About() {
         <SectionTitle>{t('about.contactTitle')}</SectionTitle>
         <div className="card px-4 py-4">
           <p className="text-sm text-ink-soft leading-relaxed">{t('about.contactBody')}</p>
-          <p className="text-xs text-ink-faint mt-3 font-semibold">{t('settings.version')} 0.1.0</p>
+          <SocialLinks />
+          <p className="text-xs text-ink-faint mt-1 font-semibold text-center">{t('settings.version')} 0.1.0</p>
         </div>
       </div>
     </div>
