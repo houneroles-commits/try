@@ -308,6 +308,19 @@
     "fPhone": "Phone (optional)",
     "fNote": "Note (optional)"
   },
+  "hubTour": {
+    "welcomeTitle": "Welcome to your Hub 👋",
+    "welcomeBody": "This is your command centre. From here, one leader can look after many farmers — even those without a phone.",
+    "addTitle": "Add your farmers",
+    "addBody": "Tap “Add” and enter a farmer's name, crop and village. Lima finds their weather automatically.",
+    "statusTitle": "See who needs help today",
+    "statusBody": "Each farmer card shows a live tag — 🌧 rain coming or 💧 needs water — so you know who to visit today.",
+    "detailTitle": "Open a farmer for details",
+    "detailBody": "Tap a farmer to see today's advice, log their rain/watering/harvest, send it on WhatsApp, or ask the AI on their behalf.",
+    "addFirst": "Add your first farmer",
+    "explore": "I'll explore first",
+    "replay": "Show tutorial"
+  },
   "tools": {
     "title": "Farm tools",
     "pricesTitle": "Market prices",

@@ -308,6 +308,19 @@
     "fPhone": "Simu (hiari)",
     "fNote": "Maelezo (hiari)"
   },
+  "hubTour": {
+    "welcomeTitle": "Karibu kwenye Kituo chako 👋",
+    "welcomeBody": "Hapa ndipo kituo chako. Kiongozi mmoja anaweza kuhudumia wakulima wengi — hata wale wasio na simu.",
+    "addTitle": "Ongeza wakulima wako",
+    "addBody": "Gusa “Ongeza” na uweke jina la mkulima, zao na kijiji. Lima hupata hali ya hewa yao kiotomatiki.",
+    "statusTitle": "Ona nani anahitaji msaada leo",
+    "statusBody": "Kila kadi ya mkulima huonyesha alama hai — 🌧 mvua inakuja au 💧 anahitaji maji — ili ujue wa kumtembelea leo.",
+    "detailTitle": "Fungua mkulima kwa maelezo",
+    "detailBody": "Gusa mkulima kuona ushauri wa leo, kuweka rekodi ya mvua/umwagiliaji/mavuno, kutuma kwa WhatsApp, au kuuliza AI kwa niaba yao.",
+    "addFirst": "Ongeza mkulima wako wa kwanza",
+    "explore": "Nitachunguza kwanza",
+    "replay": "Onyesha mafunzo"
+  },
   "tools": {
     "title": "Zana za shamba",
     "pricesTitle": "Bei za soko",

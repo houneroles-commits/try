@@ -13,6 +13,7 @@ export const KEYS = {
   finances: NS + 'finances',
   hubFarmers: NS + 'hubFarmers',
   hubRecords: NS + 'hubRecords',
+  hubTourSeen: NS + 'hubTourSeen',
 } as const;
 
 export function load<T>(key: string, fallback: T): T {

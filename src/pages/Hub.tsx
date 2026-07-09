@@ -11,6 +11,8 @@ import {
 import type { CropId, HubFarmer } from '../lib/types';
 import { Icon, type IconName } from '../components/Icon';
 import { Button, Chip, EmptyState, Field, Sheet, inputCls } from '../components/ui';
+import { HubTour } from '../components/HubTour';
+import { KEYS, load, save } from '../lib/storage';
 
 const CLERK_ON = Boolean(import.meta.env.VITE_CLERK_PUBLISHABLE_KEY);
 const blank = () => ({ name: '', crop: 'maize' as CropId, location: '', fieldSizeHa: '0.5', phone: '', note: '' });
@@ -27,6 +29,9 @@ export default function Hub() {
   const [adding, setAdding] = useState(false);
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState(blank());
+  const [showTour, setShowTour] = useState(() => !load(KEYS.hubTourSeen, false));
+
+  const closeTour = () => { setShowTour(false); save(KEYS.hubTourSeen, true); };
 
   const persist = (next: HubFarmer[]) => { setFarmers(next); saveFarmers(next); };
 
@@ -109,6 +114,10 @@ export default function Hub() {
             <p className="text-sm text-bg/75 dark:text-ink/70">{t('hub.subtitle')}</p>
           </div>
           <div className="flex items-center gap-2">
+            <button onClick={() => setShowTour(true)}
+              className="tap rounded-full bg-bg/15 p-2 text-bg dark:text-ink backdrop-blur" aria-label={t('hubTour.replay')}>
+              <Icon name="sparkle" size={20} />
+            </button>
             {CLERK_ON && <UserButton afterSignOutUrl="/welcome" />}
             <button onClick={() => navigate('/settings')}
               className="tap rounded-full bg-bg/15 p-2 text-bg dark:text-ink backdrop-blur" aria-label={t('nav.settings')}>
@@ -238,6 +247,12 @@ export default function Hub() {
           {saving ? t('common.loading') : t('common.save')}
         </Button>
       </Sheet>
+
+      <HubTour
+        open={showTour}
+        onClose={closeTour}
+        onAddFarmer={() => { closeTour(); setAdding(true); }}
+      />
     </div>
   );
 }
