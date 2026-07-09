@@ -270,7 +270,8 @@
     "personalBody": "Manage your own farm — weather, watering advice, records and the AI assistant.",
     "hubTitle": "Community Hub",
     "hubBody": "A leader manages many farmers who don't have a phone — look up advice and keep their records.",
-    "switchLater": "You can switch anytime in Settings."
+    "switchLater": "You can switch anytime in Settings.",
+    "switch": "Switch"
   },
   "hub": {
     "leaderHi": "Welcome, leader",

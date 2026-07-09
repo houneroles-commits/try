@@ -270,7 +270,8 @@
     "personalBody": "Simamia shamba lako — hali ya hewa, ushauri wa umwagiliaji, rekodi na msaidizi wa AI.",
     "hubTitle": "Kituo cha Jamii",
     "hubBody": "Kiongozi husimamia wakulima wengi wasio na simu — tazama ushauri na weka rekodi zao.",
-    "switchLater": "Unaweza kubadilisha wakati wowote katika Mipangilio."
+    "switchLater": "Unaweza kubadilisha wakati wowote katika Mipangilio.",
+    "switch": "Badili"
   },
   "hub": {
     "leaderHi": "Karibu, kiongozi",

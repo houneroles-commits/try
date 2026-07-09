@@ -227,16 +227,26 @@ export default function Home() {
                 {t('app.tagline')}
               </p>
             </div>
-            {threeDAllowed && (
+            <div className="flex items-center gap-2">
+              {threeDAllowed && (
+                <button
+                  onClick={() => updateSettings({ show3D: !settings.show3D })}
+                  className="tap flex items-center gap-1.5 rounded-full bg-bg/15 px-3.5 py-2 text-xs font-bold text-bg dark:text-ink backdrop-blur"
+                  aria-pressed={settings.show3D}
+                >
+                  <Icon name="sparkle" size={14} />
+                  {settings.show3D ? t('home.hide3d') : t('home.show3d')}
+                </button>
+              )}
               <button
-                onClick={() => updateSettings({ show3D: !settings.show3D })}
+                onClick={() => navigate('/welcome')}
                 className="tap flex items-center gap-1.5 rounded-full bg-bg/15 px-3.5 py-2 text-xs font-bold text-bg dark:text-ink backdrop-blur"
-                aria-pressed={settings.show3D}
+                aria-label={t('mode.switch')}
               >
-                <Icon name="sparkle" size={14} />
-                {settings.show3D ? t('home.hide3d') : t('home.show3d')}
+                <Icon name="globe" size={14} />
+                {t('mode.switch')}
               </button>
-            )}
+            </div>
           </div>
 
           {/* compact current weather in hero */}
