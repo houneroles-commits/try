@@ -5,7 +5,7 @@
  * + CSS only download when the map opens).
  */
 import 'leaflet/dist/leaflet.css';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { CircleMarker, MapContainer, TileLayer } from 'react-leaflet';
 
@@ -16,6 +16,7 @@ interface Frame {
 }
 
 const FRAME_MS = 650; // playback speed
+const REFRESH_MS = 5 * 60 * 1000; // re-pull latest radar every 5 min (stays live)
 
 export default function RainMap({ lat, lon }: { lat: number; lon: number }) {
   const { t } = useTranslation();
@@ -25,30 +26,49 @@ export default function RainMap({ lat, lon }: { lat: number; lon: number }) {
   const [playing, setPlaying] = useState(
     !window.matchMedia?.('(prefers-reduced-motion: reduce)').matches,
   );
+  const [updatedAt, setUpdatedAt] = useState<number | null>(null);
   const timer = useRef<number | null>(null);
+  const loadedOnce = useRef(false);
 
-  // Load available radar frames (past + forecast).
-  useEffect(() => {
-    let alive = true;
-    fetch('https://api.rainviewer.com/public/weather-maps.json')
-      .then((r) => (r.ok ? r.json() : null))
-      .then((json) => {
-        if (!alive || !json) return;
-        if (typeof json.host === 'string') setHost(json.host);
-        const past = (json?.radar?.past ?? []) as { time: number; path: string }[];
-        const now = (json?.radar?.nowcast ?? []) as { time: number; path: string }[];
-        const all: Frame[] = [
-          ...past.map((f) => ({ ...f, forecast: false })),
-          ...now.map((f) => ({ ...f, forecast: true })),
-        ];
-        setFrames(all);
-        setI(Math.max(0, past.length - 1)); // start at "now"
-      })
-      .catch(() => {});
-    return () => {
-      alive = false;
-    };
+  // Pull the latest radar frames (past + forecast). Called on mount + on a timer.
+  const load = useCallback(async () => {
+    try {
+      const r = await fetch('https://api.rainviewer.com/public/weather-maps.json', {
+        cache: 'no-store',
+      });
+      if (!r.ok) return;
+      const json = await r.json();
+      if (typeof json.host === 'string') setHost(json.host);
+      const past = (json?.radar?.past ?? []) as { time: number; path: string }[];
+      const now = (json?.radar?.nowcast ?? []) as { time: number; path: string }[];
+      const all: Frame[] = [
+        ...past.map((f) => ({ ...f, forecast: false })),
+        ...now.map((f) => ({ ...f, forecast: true })),
+      ];
+      setFrames(all);
+      setUpdatedAt(Date.now());
+      if (!loadedOnce.current) {
+        setI(Math.max(0, past.length - 1)); // start at "now" on first load only
+        loadedOnce.current = true;
+      } else {
+        setI((prev) => Math.min(prev, all.length - 1)); // keep position valid on refresh
+      }
+    } catch {
+      /* radar simply not shown */
+    }
   }, []);
+
+  // Keep it live: load now, then refresh on an interval + when the tab refocuses.
+  useEffect(() => {
+    void load();
+    const id = window.setInterval(() => void load(), REFRESH_MS);
+    const onFocus = () => void load();
+    window.addEventListener('focus', onFocus);
+    return () => {
+      window.clearInterval(id);
+      window.removeEventListener('focus', onFocus);
+    };
+  }, [load]);
 
   // Animate.
   useEffect(() => {
@@ -72,6 +92,17 @@ export default function RainMap({ lat, lon }: { lat: number; lon: number }) {
 
   return (
     <div className="relative">
+      {updatedAt && (
+        <div className="absolute top-3 left-3 z-[500] flex items-center gap-1.5 rounded-full bg-surface/90 backdrop-blur px-2.5 py-1 shadow-card">
+          <span className="relative flex h-2 w-2">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-clay opacity-70" />
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-clay" />
+          </span>
+          <span className="text-[11px] font-bold uppercase tracking-wide text-ink-soft">
+            {t('common.liveData')}
+          </span>
+        </div>
+      )}
       <MapContainer
         center={[lat, lon]}
         zoom={8}
