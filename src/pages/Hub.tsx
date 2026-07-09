@@ -145,7 +145,7 @@ export default function Hub() {
               <Icon name="sparkle" size={20} />
             </button>
             {CLERK_ON && <UserButton afterSignOutUrl="/welcome" />}
-            <button onClick={() => navigate('/settings')}
+            <button onClick={() => navigate('/hub/settings')}
               className="tap rounded-full bg-bg/15 p-2 text-bg dark:text-ink backdrop-blur" aria-label={t('nav.settings')}>
               <Icon name="settings" size={20} />
             </button>
