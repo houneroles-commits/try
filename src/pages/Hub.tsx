@@ -98,7 +98,7 @@ export default function Hub() {
   return (
     <div className="min-h-dvh">
       {/* premium header */}
-      <header className="relative overflow-hidden bg-soil text-bg dark:text-ink px-5 pt-8 pb-16 rounded-b-[2rem]">
+      <header className="relative overflow-hidden bg-soil text-bg dark:text-ink px-5 pt-8 pb-7 rounded-b-[2rem]">
         <div className="absolute inset-0" aria-hidden
           style={{ background: 'linear-gradient(160deg, rgb(var(--c-umber)) 0%, rgb(var(--c-soil)) 70%)' }} />
         <div className="absolute inset-0 glow-radial opacity-70 pointer-events-none" aria-hidden />
@@ -119,8 +119,8 @@ export default function Hub() {
       </header>
 
       <div className="mx-auto max-w-3xl px-4 pb-24">
-        {/* stat tiles — pulled up over the header for a premium dashboard feel */}
-        <div className="-mt-10 grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+        {/* stat tiles */}
+        <div className="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-2.5">
           {tiles.map((tile) => (
             <div key={tile.label} className="card p-3.5 bg-gradient-to-br from-surface to-surface-2/50 shadow-card">
               <span className={`w-9 h-9 rounded-xl flex items-center justify-center ${tile.tint}`}>
