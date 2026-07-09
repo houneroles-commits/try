@@ -300,6 +300,10 @@
     "askAi": "Uliza msaidizi kuhusu mkulima huyu",
     "askPlaceholder": "mf. majani ya mahindi yake ni ya njano",
     "addFarmer": "Ongeza mkulima",
+    "editFarmer": "Hariri mkulima",
+    "exportCsv": "Pakua orodha (CSV)",
+    "data": "Data",
+    "helpAbout": "Msaada na Kuhusu",
     "emptyTitle": "Bado hakuna wakulima",
     "emptyHint": "Ongeza wakulima unaowasaidia ili uweze kutazama ushauri na kuweka rekodi zao.",
     "switchPersonal": "Badili kwenda shamba langu",
@@ -367,6 +371,19 @@
     "development": "Weka mbolea ya nitrojeni na endelea kupalilia. Kagua wadudu kila wiki.",
     "mid": "Kutoa maua/kujaza ndio hatua yenye kiu zaidi — usiache zao likauke, na angalia wadudu.",
     "late": "Kukomaa — punguza umwagiliaji na jiandae kwa mavuno na kukausha."
+  },
+  "about": {
+    "title": "Msaada na Kuhusu",
+    "intro": "Lima huwasaidia wakulima kuamua wakati wa kumwagilia na kupanda kwa kutumia utabiri wa hali ya hewa — kwenye programu, kwenye WhatsApp, au kupitia kiongozi wa jamii. Hufanya kazi nje ya mtandao na kwa lugha yako.",
+    "useTitle": "Jinsi ya kutumia Lima",
+    "use1": "Sanidi shamba lako (mazao, udongo, mahali) ili ushauri uwe maalum kwako.",
+    "use2": "Angalia skrini ya Nyumbani kila siku kwa uamuzi wa umwagiliaji na utabiri.",
+    "use3": "Tumia Zana za Shamba kwa bei, kiasi cha mbolea, msaada wa wadudu na faida.",
+    "use4": "Uliza msaidizi swali lolote la kilimo — kwa maandishi, sauti, au picha.",
+    "dataTitle": "Data inatoka wapi",
+    "dataBody": "Hali ya hewa na rada ya mvua ni bure na huria (Open-Meteo na RainViewer). Msaidizi unaendeshwa na AI. Data ya shamba lako hubaki kwenye kifaa chako isipokuwa ukiingia kwenye Kituo.",
+    "contactTitle": "Mawasiliano na toleo",
+    "contactBody": "Lima ni mradi wa kusaidia wakulima wadogo. Kwa msaada au maoni, wasiliana na mratibu wako wa Lima."
   },
   "crops": {
     "maize": "Mahindi",

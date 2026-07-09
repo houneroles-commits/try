@@ -31,6 +31,7 @@ export default function Hub() {
   const [adding, setAdding] = useState(false);
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState(blank());
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [showTour, setShowTour] = useState(() => !load(KEYS.hubTourSeen, false));
 
   const closeTour = () => { setShowTour(false); save(KEYS.hubTourSeen, true); };
@@ -76,12 +77,24 @@ export default function Hub() {
     return () => { alive = false; };
   }, [farmers]);
 
+  const openAdd = () => { setEditingId(null); setForm(blank()); setAdding(true); };
+  const openEdit = (f: HubFarmer) => {
+    setEditingId(f.id);
+    setForm({
+      name: f.name, crop: f.crop, location: f.location,
+      fieldSizeHa: String(f.fieldSizeHa), phone: f.phone ?? '', note: f.note ?? '',
+    });
+    setAdding(true);
+  };
+  const closeSheet = () => { setAdding(false); setEditingId(null); setForm(blank()); };
+
   const submit = async () => {
     if (!form.name.trim()) return;
     setSaving(true);
+    const existing = editingId ? farmers.find((f) => f.id === editingId) : null;
     const geo = form.location.trim() ? await geocode(form.location.trim()) : null;
     const farmer: HubFarmer = {
-      id: Math.random().toString(36).slice(2) + Date.now().toString(36),
+      id: existing?.id ?? Math.random().toString(36).slice(2) + Date.now().toString(36),
       name: form.name.trim(),
       crop: form.crop,
       location: geo?.label ?? form.location.trim(),
@@ -90,13 +103,17 @@ export default function Hub() {
       fieldSizeHa: Math.max(0, parseFloat(form.fieldSizeHa) || 0),
       phone: form.phone.trim() || undefined,
       note: form.note.trim() || undefined,
-      createdAt: new Date().toISOString(),
+      createdAt: existing?.createdAt ?? new Date().toISOString(),
     };
-    persist([farmer, ...farmers]);
+    if (existing) {
+      persist(farmers.map((f) => (f.id === farmer.id ? farmer : f)));
+      setStatus((s) => { const n = { ...s }; delete n[farmer.id]; return n; }); // re-check rain
+    } else {
+      persist([farmer, ...farmers]);
+    }
     if (cloud) await cloud.upsertFarmer(farmer).catch(() => {});
-    setForm(blank());
     setSaving(false);
-    setAdding(false);
+    closeSheet();
   };
 
   const remove = (id: string) => {
@@ -172,7 +189,7 @@ export default function Hub() {
             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-faint"><Icon name="pin" size={16} /></span>
             <input className={`${inputCls} pl-9`} placeholder={t('hub.search')} value={q} onChange={(e) => setQ(e.target.value)} />
           </div>
-          <Button icon="plus" onClick={() => setAdding(true)}>{t('hub.add')}</Button>
+          <Button icon="plus" onClick={openAdd}>{t('hub.add')}</Button>
         </div>
 
         {/* crop filter chips */}
@@ -192,7 +209,7 @@ export default function Hub() {
           {farmers.length === 0 ? (
             <div className="sm:col-span-2">
               <EmptyState icon="sprout" title={t('hub.emptyTitle')} hint={t('hub.emptyHint')}
-                action={<Button icon="plus" onClick={() => setAdding(true)}>{t('hub.addFarmer')}</Button>} />
+                action={<Button icon="plus" onClick={openAdd}>{t('hub.addFarmer')}</Button>} />
             </div>
           ) : filtered.length === 0 ? (
             <div className="sm:col-span-2"><EmptyState icon="pin" title={t('tools.noResults')} /></div>
@@ -218,12 +235,21 @@ export default function Hub() {
                       {f.fieldSizeHa} {t('common.ha')}{f.phone ? ` · 📱 ${f.phone}` : ''}
                     </span>
                   </span>
-                  <span
-                    role="button"
-                    tabIndex={0}
-                    onClick={(e) => { e.stopPropagation(); remove(f.id); }}
-                    className="tap text-ink-faint px-1 -m-1" aria-label={t('common.delete')}>
-                    <Icon name="trash" size={16} />
+                  <span className="flex flex-col gap-1 shrink-0">
+                    <span
+                      role="button"
+                      tabIndex={0}
+                      onClick={(e) => { e.stopPropagation(); openEdit(f); }}
+                      className="tap text-ink-faint px-1 -m-1" aria-label={t('common.edit')}>
+                      <Icon name="edit" size={16} />
+                    </span>
+                    <span
+                      role="button"
+                      tabIndex={0}
+                      onClick={(e) => { e.stopPropagation(); remove(f.id); }}
+                      className="tap text-ink-faint px-1 -m-1" aria-label={t('common.delete')}>
+                      <Icon name="trash" size={16} />
+                    </span>
                   </span>
                 </button>
               );
@@ -245,7 +271,7 @@ export default function Hub() {
       </div>
 
       {/* add-farmer sheet */}
-      <Sheet open={adding} onClose={() => setAdding(false)} title={t('hub.addFarmer')}>
+      <Sheet open={adding} onClose={closeSheet} title={editingId ? t('hub.editFarmer') : t('hub.addFarmer')}>
         <Field label={t('hub.fName')}>
           <input className={inputCls} value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} autoFocus />
         </Field>
@@ -277,7 +303,7 @@ export default function Hub() {
       <HubTour
         open={showTour}
         onClose={closeTour}
-        onAddFarmer={() => { closeTour(); setAdding(true); }}
+        onAddFarmer={() => { closeTour(); openAdd(); }}
       />
     </div>
   );

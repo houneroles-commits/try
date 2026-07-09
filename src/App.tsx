@@ -17,6 +17,7 @@ import ModeSelect from './pages/ModeSelect';
 import Hub from './pages/Hub';
 import FarmerDetail from './pages/FarmerDetail';
 import HubSettings from './pages/HubSettings';
+import About from './pages/About';
 import RequireHubAuth from './pages/HubGate';
 import { Skeleton } from './components/ui';
 import { useApp } from './state/AppContext';
@@ -43,6 +44,7 @@ export default function App() {
       <Route path="/hub" element={<RequireHubAuth><Hub /></RequireHubAuth>} />
       <Route path="/hub/farmer/:id" element={<RequireHubAuth><FarmerDetail /></RequireHubAuth>} />
       <Route path="/hub/settings" element={<RequireHubAuth><HubSettings /></RequireHubAuth>} />
+      <Route path="/about" element={<About />} />
       <Route path="/onboarding" element={<Onboarding />} />
       <Route element={<Layout />}>
         <Route

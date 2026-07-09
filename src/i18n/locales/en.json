@@ -300,6 +300,10 @@
     "askAi": "Ask the assistant about this farmer",
     "askPlaceholder": "e.g. her maize leaves are yellow",
     "addFarmer": "Add a farmer",
+    "editFarmer": "Edit farmer",
+    "exportCsv": "Export roster (CSV)",
+    "data": "Data",
+    "helpAbout": "Help & About",
     "emptyTitle": "No farmers yet",
     "emptyHint": "Add the farmers you help so you can look up advice and keep their records.",
     "switchPersonal": "Switch to my own farm",
@@ -367,6 +371,19 @@
     "development": "Top-dress with nitrogen and keep weeding. Scout for pests weekly.",
     "mid": "Flowering/filling is the thirstiest stage — don't let the crop dry out, and watch for pests.",
     "late": "Ripening — reduce watering and prepare for harvest and drying."
+  },
+  "about": {
+    "title": "Help & About",
+    "intro": "Lima helps farmers decide when to water and plant using the weather forecast — on the app, on WhatsApp, or through a community leader. It works offline and in your language.",
+    "useTitle": "How to use Lima",
+    "use1": "Set up your farm (crops, soil, location) so advice is made for you.",
+    "use2": "Check the Home screen each day for the watering decision and forecast.",
+    "use3": "Use Farm Tools for prices, fertilizer amounts, pest help and profit.",
+    "use4": "Ask the assistant any farming question — by text, voice, or a photo.",
+    "dataTitle": "Where the data comes from",
+    "dataBody": "Weather and rain radar are free and open (Open-Meteo and RainViewer). The assistant is powered by AI. Your farm data stays on your device unless you sign in to the Hub.",
+    "contactTitle": "Contact & version",
+    "contactBody": "Lima is a project to support smallholder farmers. For help or feedback, reach out to your Lima coordinator."
   },
   "crops": {
     "maize": "Maize",

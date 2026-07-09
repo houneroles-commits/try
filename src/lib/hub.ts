@@ -82,6 +82,20 @@ export function deleteRecord(farmerId: string, id: string): FarmRecord[] {
   return all[farmerId];
 }
 
+/* ---------------------------------------------------- CSV export */
+export function downloadFarmersCSV(farmers: HubFarmer[]): void {
+  const headers = ['Name', 'Crop', 'Location', 'Field size (ha)', 'Phone', 'Note'];
+  const esc = (v: unknown) => `"${String(v ?? '').replace(/"/g, '""')}"`;
+  const rows = farmers.map((f) => [f.name, f.crop, f.location, f.fieldSizeHa, f.phone, f.note]);
+  const csv = [headers, ...rows].map((r) => r.map(esc).join(',')).join('\r\n');
+  const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'lima-farmers.csv';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 /* ---------------------------------------------------- Avatar colours */
 const AVATAR = ['bg-clay', 'bg-sun', 'bg-sky', 'bg-umber', 'bg-clay-strong'];
 export function avatarColor(name: string): string {

@@ -5,7 +5,8 @@ import { useApp } from '../state/AppContext';
 import { LANGUAGES } from '../i18n';
 import type { Language, ThemeMode } from '../lib/types';
 import { Icon, type IconName } from '../components/Icon';
-import { Button, SectionTitle } from '../components/ui';
+import { SectionTitle } from '../components/ui';
+import { downloadFarmersCSV, loadFarmers } from '../lib/hub';
 
 const CLERK_ON = Boolean(import.meta.env.VITE_CLERK_PUBLISHABLE_KEY);
 
@@ -86,11 +87,20 @@ export default function HubSettings() {
           {CLERK_ON && <SignOutRow />}
         </div>
 
-        {/* about */}
-        <SectionTitle>{t('settings.about')}</SectionTitle>
-        <div className="card px-4 py-4">
-          <p className="text-sm text-ink-soft leading-relaxed">{t('settings.aboutBody')}</p>
-          <p className="text-xs text-ink-faint mt-2 font-semibold">{t('settings.version')} 0.1.0</p>
+        {/* data */}
+        <SectionTitle>{t('hub.data')}</SectionTitle>
+        <div className="card divide-y divide-line/60">
+          <button onClick={() => downloadFarmersCSV(loadFarmers())}
+            className="tap w-full flex items-center gap-3 px-4 py-3.5 text-left active:bg-surface-2">
+            <Icon name="download" size={19} className="text-clay-strong" />
+            <span className="flex-1 font-bold text-ink text-sm">{t('hub.exportCsv')}</span>
+          </button>
+          <button onClick={() => navigate('/about')}
+            className="tap w-full flex items-center gap-3 px-4 py-3.5 text-left active:bg-surface-2">
+            <Icon name="alert" size={19} className="text-clay-strong" />
+            <span className="flex-1 font-bold text-ink text-sm">{t('hub.helpAbout')}</span>
+            <Icon name="chevronRight" size={16} className="text-ink-faint" />
+          </button>
         </div>
       </div>
     </div>
