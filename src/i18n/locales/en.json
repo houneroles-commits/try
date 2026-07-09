@@ -276,6 +276,7 @@
     "leaderHi": "Welcome, leader",
     "title": "Lima Hub",
     "subtitle": "Manage your farmers",
+    "signInPrompt": "Sign in to manage your farmers",
     "farmerCount_one": "{{count}} farmer",
     "farmerCount_other": "{{count}} farmers",
     "addFarmer": "Add a farmer",

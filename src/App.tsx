@@ -14,7 +14,7 @@ import Pests from './pages/Pests';
 import Finance from './pages/Finance';
 import Onboarding from './pages/Onboarding';
 import ModeSelect from './pages/ModeSelect';
-import Hub from './pages/Hub';
+import HubGate from './pages/HubGate';
 import { Skeleton } from './components/ui';
 import { useApp } from './state/AppContext';
 
@@ -37,7 +37,7 @@ export default function App() {
     <Routes>
       {/* First-open choice + Hub live outside the farmer Layout (own chrome) */}
       <Route path="/welcome" element={<ModeSelect />} />
-      <Route path="/hub" element={<Hub />} />
+      <Route path="/hub" element={<HubGate />} />
       <Route path="/onboarding" element={<Onboarding />} />
       <Route element={<Layout />}>
         <Route

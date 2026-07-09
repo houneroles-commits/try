@@ -276,6 +276,7 @@
     "leaderHi": "Karibu, kiongozi",
     "title": "Kituo cha Lima",
     "subtitle": "Simamia wakulima wako",
+    "signInPrompt": "Ingia ili kusimamia wakulima wako",
     "farmerCount_one": "mkulima {{count}}",
     "farmerCount_other": "wakulima {{count}}",
     "addFarmer": "Ongeza mkulima",

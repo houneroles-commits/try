@@ -1,7 +1,10 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import { UserButton } from '@clerk/clerk-react';
 import { useApp } from '../state/AppContext';
+
+const CLERK_ON = Boolean(import.meta.env.VITE_CLERK_PUBLISHABLE_KEY);
 import { KEYS, load, save, uid } from '../lib/storage';
 import { CROPS, CROP_IDS } from '../lib/season';
 import type { CropId, HubFarmer } from '../lib/types';
@@ -60,13 +63,16 @@ export default function Hub() {
             <h1 className="text-3xl font-display font-bold text-bg dark:text-ink">{t('hub.title')}</h1>
             <p className="text-sm text-bg/75 dark:text-ink/70">{t('hub.subtitle')}</p>
           </div>
-          <button
-            onClick={() => navigate('/settings')}
-            className="tap rounded-full bg-bg/15 p-2 text-bg dark:text-ink backdrop-blur"
-            aria-label={t('nav.settings')}
-          >
-            <Icon name="settings" size={20} />
-          </button>
+          <div className="flex items-center gap-2">
+            {CLERK_ON && <UserButton afterSignOutUrl="/welcome" />}
+            <button
+              onClick={() => navigate('/settings')}
+              className="tap rounded-full bg-bg/15 p-2 text-bg dark:text-ink backdrop-blur"
+              aria-label={t('nav.settings')}
+            >
+              <Icon name="settings" size={20} />
+            </button>
+          </div>
         </div>
         <div className="relative mt-5 inline-flex items-center gap-2 rounded-2xl bg-bg/12 backdrop-blur px-4 py-2"
              style={{ backgroundColor: 'rgb(var(--c-bg) / 0.14)' }}>
