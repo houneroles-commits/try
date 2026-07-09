@@ -14,7 +14,9 @@ import Pests from './pages/Pests';
 import Finance from './pages/Finance';
 import Onboarding from './pages/Onboarding';
 import ModeSelect from './pages/ModeSelect';
-import HubGate from './pages/HubGate';
+import Hub from './pages/Hub';
+import FarmerDetail from './pages/FarmerDetail';
+import RequireHubAuth from './pages/HubGate';
 import { Skeleton } from './components/ui';
 import { useApp } from './state/AppContext';
 
@@ -37,7 +39,8 @@ export default function App() {
     <Routes>
       {/* First-open choice + Hub live outside the farmer Layout (own chrome) */}
       <Route path="/welcome" element={<ModeSelect />} />
-      <Route path="/hub" element={<HubGate />} />
+      <Route path="/hub" element={<RequireHubAuth><Hub /></RequireHubAuth>} />
+      <Route path="/hub/farmer/:id" element={<RequireHubAuth><FarmerDetail /></RequireHubAuth>} />
       <Route path="/onboarding" element={<Onboarding />} />
       <Route element={<Layout />}>
         <Route

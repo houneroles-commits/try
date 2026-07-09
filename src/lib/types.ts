@@ -9,6 +9,8 @@ export interface HubFarmer {
   name: string;
   crop: CropId;
   location: string;
+  lat?: number;
+  lon?: number;
   fieldSizeHa: number;
   phone?: string;
   note?: string;
