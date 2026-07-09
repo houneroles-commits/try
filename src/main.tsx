@@ -7,6 +7,7 @@ import './i18n';
 import './theme.css';
 import App from './App';
 import { AppProvider } from './state/AppContext';
+import { ClerkCloudProvider, NoCloudProvider } from './lib/cloud';
 
 // PWA: auto-update service worker keeps shell + last data available offline
 registerSW({ immediate: true });
@@ -28,9 +29,9 @@ const tree = (
 ReactDOM.createRoot(document.getElementById('root')!).render(
   clerkKey ? (
     <ClerkProvider publishableKey={clerkKey} afterSignOutUrl="/welcome">
-      {tree}
+      <ClerkCloudProvider>{tree}</ClerkCloudProvider>
     </ClerkProvider>
   ) : (
-    tree
+    <NoCloudProvider>{tree}</NoCloudProvider>
   ),
 );

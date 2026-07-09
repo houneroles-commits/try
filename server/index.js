@@ -16,13 +16,17 @@ import { sendWhatsApp, whatsappMode, fetchTwilioMedia, normalizePhone } from './
 import { aiMode, aiModel, aiChat, aiVision, transcribeAudio, extractProfile } from './ai.js';
 import { isPriceQuery, detectCrop, priceContext } from './prices.js';
 import { initPush, runAlertSweep, startAlertScheduler, rain48h } from './alerts.js';
-import { initDb, dbEnabled } from './db.js';
+import { initDb, dbEnabled, query } from './db.js';
+import { clerkMiddleware, getAuth } from '@clerk/express';
 
 const PORT = process.env.PORT ?? 8790;
+const clerkReady = Boolean(process.env.CLERK_SECRET_KEY);
 
 const app = express();
 app.use(cors());
 app.use(express.json({ limit: '8mb' })); // room for one compressed plant photo
+// Attach Clerk auth (no-op if keys absent). Used to scope Hub data per leader.
+if (clerkReady) app.use(clerkMiddleware());
 app.use(express.urlencoded({ extended: true })); // Africa's Talking callbacks
 
 /* ----------------------------------------------------- AI (Groq) */
@@ -86,6 +90,84 @@ app.post('/api/tts', async (req, res) => {
   } catch (e) {
     console.error('[tts]', e.message);
     res.status(502).json({ error: 'tts_failed' });
+  }
+});
+
+/* ------------------------------------------ Hub (leader) cloud sync */
+// Each leader's farmers + records live in Postgres, scoped by their Clerk id.
+function leaderId(req, res) {
+  if (!dbEnabled() || !clerkReady) {
+    res.status(503).json({ error: 'cloud_unavailable' });
+    return null;
+  }
+  const { userId } = getAuth(req);
+  if (!userId) {
+    res.status(401).json({ error: 'unauthorized' });
+    return null;
+  }
+  return userId;
+}
+
+app.get('/api/hub/state', async (req, res) => {
+  const lid = leaderId(req, res);
+  if (!lid) return;
+  try {
+    const f = await query('SELECT data FROM hub_farmers WHERE leader_id = $1', [lid]);
+    const r = await query('SELECT farmer_id, records FROM hub_records WHERE leader_id = $1', [lid]);
+    const records = {};
+    for (const row of r.rows) records[row.farmer_id] = row.records;
+    res.json({ farmers: f.rows.map((x) => x.data), records });
+  } catch (e) {
+    console.error('[hub/state]', e.message);
+    res.status(500).json({ error: 'db' });
+  }
+});
+
+app.put('/api/hub/farmers/:id', async (req, res) => {
+  const lid = leaderId(req, res);
+  if (!lid) return;
+  const farmer = req.body;
+  if (!farmer || farmer.id !== req.params.id) return res.status(400).json({ error: 'bad_farmer' });
+  try {
+    await query(
+      `INSERT INTO hub_farmers(leader_id, id, data) VALUES($1, $2, $3)
+       ON CONFLICT (leader_id, id) DO UPDATE SET data = $3`,
+      [lid, farmer.id, JSON.stringify(farmer)],
+    );
+    res.json({ ok: true });
+  } catch (e) {
+    console.error('[hub/farmers put]', e.message);
+    res.status(500).json({ error: 'db' });
+  }
+});
+
+app.delete('/api/hub/farmers/:id', async (req, res) => {
+  const lid = leaderId(req, res);
+  if (!lid) return;
+  try {
+    await query('DELETE FROM hub_farmers WHERE leader_id = $1 AND id = $2', [lid, req.params.id]);
+    await query('DELETE FROM hub_records WHERE leader_id = $1 AND farmer_id = $2', [lid, req.params.id]);
+    res.json({ ok: true });
+  } catch (e) {
+    console.error('[hub/farmers del]', e.message);
+    res.status(500).json({ error: 'db' });
+  }
+});
+
+app.put('/api/hub/records/:farmerId', async (req, res) => {
+  const lid = leaderId(req, res);
+  if (!lid) return;
+  const records = Array.isArray(req.body?.records) ? req.body.records : [];
+  try {
+    await query(
+      `INSERT INTO hub_records(leader_id, farmer_id, records) VALUES($1, $2, $3)
+       ON CONFLICT (leader_id, farmer_id) DO UPDATE SET records = $3`,
+      [lid, req.params.farmerId, JSON.stringify(records)],
+    );
+    res.json({ ok: true });
+  } catch (e) {
+    console.error('[hub/records put]', e.message);
+    res.status(500).json({ error: 'db' });
   }
 });
 
@@ -317,6 +399,7 @@ app.get('/api/health', (_req, res) => {
     sms: smsMode(),
     whatsapp: whatsappMode(),
     db: dbEnabled() ? 'postgres' : 'files',
+    hub: clerkReady && dbEnabled() ? 'cloud' : 'local',
     tts: process.env.ELEVENLABS_API_KEY ? 'elevenlabs' : 'browser',
     push: !!process.env.VAPID_PUBLIC_KEY,
   });

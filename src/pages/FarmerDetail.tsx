@@ -5,6 +5,7 @@ import { CROPS } from '../lib/season';
 import {
   addRecord, avatarColor, deleteRecord, getFarmer, getRecords, initials, rainNext48h,
 } from '../lib/hub';
+import { useCloud } from '../lib/cloud';
 import type { FarmRecord, HubFarmer, RecordKind } from '../lib/types';
 import { Icon } from '../components/Icon';
 import { Button, Sheet, Skeleton, inputCls } from '../components/ui';
@@ -15,11 +16,27 @@ export default function FarmerDetail() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { id = '' } = useParams();
-  const [farmer] = useState<HubFarmer | undefined>(() => getFarmer(id));
+  const cloud = useCloud();
+  const [farmer, setFarmer] = useState<HubFarmer | undefined>(() => getFarmer(id));
 
   const [rain, setRain] = useState<number | null>(null);
   const [rainLoading, setRainLoading] = useState(true);
   const [records, setRecords] = useState<FarmRecord[]>(() => getRecords(id));
+
+  // When signed in, load this farmer + records from the cloud.
+  useEffect(() => {
+    if (!cloud) return;
+    let alive = true;
+    cloud.getState()
+      .then((s) => {
+        if (!alive) return;
+        const f = s.farmers.find((x) => x.id === id);
+        if (f) setFarmer(f);
+        setRecords(s.records[id] ?? []);
+      })
+      .catch(() => {});
+    return () => { alive = false; };
+  }, [cloud, id]);
   const [logKind, setLogKind] = useState<RecordKind | null>(null);
   const [amount, setAmount] = useState('');
   const [question, setQuestion] = useState('');
@@ -57,9 +74,17 @@ export default function FarmerDetail() {
     if (!logKind) return;
     const amt = Math.max(0, parseFloat(amount) || 0);
     if (amt <= 0) return;
-    setRecords(addRecord(id, { kind: logKind, date: new Date().toISOString().slice(0, 10), amount: amt, crop: farmer.crop }));
+    const next = addRecord(id, { kind: logKind, date: new Date().toISOString().slice(0, 10), amount: amt, crop: farmer.crop });
+    setRecords(next);
+    if (cloud) cloud.saveRecords(id, next).catch(() => {});
     setLogKind(null);
     setAmount('');
+  };
+
+  const removeRecord = (rid: string) => {
+    const next = deleteRecord(id, rid);
+    setRecords(next);
+    if (cloud) cloud.saveRecords(id, next).catch(() => {});
   };
 
   const ask = async () => {
@@ -167,7 +192,7 @@ export default function FarmerDetail() {
                 <span className="flex-1 text-sm font-semibold text-ink">{t(`records.${r.kind}`)}</span>
                 <span className="text-sm font-bold text-ink">{r.amount} {r.kind === 'harvest' ? t('common.kg') : t('common.mm')}</span>
                 <span className="text-xs text-ink-faint">{r.date}</span>
-                <button onClick={() => setRecords(deleteRecord(id, r.id))} className="tap text-ink-faint px-1" aria-label={t('common.delete')}>
+                <button onClick={() => removeRecord(r.id)} className="tap text-ink-faint px-1" aria-label={t('common.delete')}>
                   <Icon name="trash" size={15} />
                 </button>
               </div>

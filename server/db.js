@@ -47,6 +47,18 @@ export async function initDb() {
       data       JSONB NOT NULL,
       created_at TIMESTAMPTZ NOT NULL DEFAULT now()
     );
+    CREATE TABLE IF NOT EXISTS hub_farmers (
+      leader_id TEXT NOT NULL,
+      id        TEXT NOT NULL,
+      data      JSONB NOT NULL,
+      PRIMARY KEY (leader_id, id)
+    );
+    CREATE TABLE IF NOT EXISTS hub_records (
+      leader_id TEXT NOT NULL,
+      farmer_id TEXT NOT NULL,
+      records   JSONB NOT NULL DEFAULT '[]'::jsonb,
+      PRIMARY KEY (leader_id, farmer_id)
+    );
   `);
   return true;
 }

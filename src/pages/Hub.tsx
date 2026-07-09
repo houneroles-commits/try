@@ -13,6 +13,7 @@ import { Icon, type IconName } from '../components/Icon';
 import { Button, Chip, EmptyState, Field, Sheet, inputCls } from '../components/ui';
 import { HubTour } from '../components/HubTour';
 import { KEYS, load, save } from '../lib/storage';
+import { useCloud } from '../lib/cloud';
 
 const CLERK_ON = Boolean(import.meta.env.VITE_CLERK_PUBLISHABLE_KEY);
 const blank = () => ({ name: '', crop: 'maize' as CropId, location: '', fieldSizeHa: '0.5', phone: '', note: '' });
@@ -21,6 +22,7 @@ export default function Hub() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { updateSettings } = useApp();
+  const cloud = useCloud();
 
   const [farmers, setFarmers] = useState<HubFarmer[]>(() => loadFarmers());
   const [status, setStatus] = useState<Record<string, FarmerStatus>>({});
@@ -34,6 +36,28 @@ export default function Hub() {
   const closeTour = () => { setShowTour(false); save(KEYS.hubTourSeen, true); };
 
   const persist = (next: HubFarmer[]) => { setFarmers(next); saveFarmers(next); };
+
+  // Cloud sync: when a leader is signed in, load their farmers from the server
+  // (and push up any farmers that only existed locally).
+  useEffect(() => {
+    if (!cloud) return;
+    let alive = true;
+    (async () => {
+      try {
+        const state = await cloud.getState();
+        if (!alive) return;
+        if (state.farmers.length > 0) {
+          setFarmers(state.farmers);
+          saveFarmers(state.farmers);
+        } else {
+          for (const f of loadFarmers()) await cloud.upsertFarmer(f);
+        }
+      } catch {
+        /* offline → keep whatever is local */
+      }
+    })();
+    return () => { alive = false; };
+  }, [cloud]);
 
   // Fetch each farmer's rain status (lightweight, once per farmer with coords).
   useEffect(() => {
@@ -56,27 +80,29 @@ export default function Hub() {
     if (!form.name.trim()) return;
     setSaving(true);
     const geo = form.location.trim() ? await geocode(form.location.trim()) : null;
-    persist([
-      {
-        id: Math.random().toString(36).slice(2) + Date.now().toString(36),
-        name: form.name.trim(),
-        crop: form.crop,
-        location: geo?.label ?? form.location.trim(),
-        lat: geo?.lat,
-        lon: geo?.lon,
-        fieldSizeHa: Math.max(0, parseFloat(form.fieldSizeHa) || 0),
-        phone: form.phone.trim() || undefined,
-        note: form.note.trim() || undefined,
-        createdAt: new Date().toISOString(),
-      },
-      ...farmers,
-    ]);
+    const farmer: HubFarmer = {
+      id: Math.random().toString(36).slice(2) + Date.now().toString(36),
+      name: form.name.trim(),
+      crop: form.crop,
+      location: geo?.label ?? form.location.trim(),
+      lat: geo?.lat,
+      lon: geo?.lon,
+      fieldSizeHa: Math.max(0, parseFloat(form.fieldSizeHa) || 0),
+      phone: form.phone.trim() || undefined,
+      note: form.note.trim() || undefined,
+      createdAt: new Date().toISOString(),
+    };
+    persist([farmer, ...farmers]);
+    if (cloud) await cloud.upsertFarmer(farmer).catch(() => {});
     setForm(blank());
     setSaving(false);
     setAdding(false);
   };
 
-  const remove = (id: string) => persist(farmers.filter((f) => f.id !== id));
+  const remove = (id: string) => {
+    persist(farmers.filter((f) => f.id !== id));
+    if (cloud) cloud.deleteFarmer(id).catch(() => {});
+  };
 
   // Derived: stats, crop breakdown, filtered list.
   const rainCount = farmers.filter((f) => status[f.id] === 'rain').length;

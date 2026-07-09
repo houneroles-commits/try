@@ -24,6 +24,10 @@ services:
         sync: false
       - key: DATABASE_URL            # Neon Postgres connection string (persistent memory)
         sync: false
+      - key: CLERK_SECRET_KEY        # verifies Hub leaders for cloud sync
+        sync: false
+      - key: CLERK_PUBLISHABLE_KEY
+        sync: false
       - key: ELEVENLABS_API_KEY      # optional natural TTS voice; blank = browser voice
         sync: false
       - key: ELEVENLABS_VOICE_ID
