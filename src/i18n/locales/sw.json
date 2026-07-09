@@ -216,6 +216,7 @@
     "textLarge": "Maandishi makubwa",
     "sunlight": "Hali ya jua",
     "sunlightHint": "Utofautishaji mkubwa kwa kusoma kwenye jua kali.",
+    "switchMode": "Badili hali (Binafsi / Kituo)",
     "profile": "Wasifu wa shamba",
     "editProfile": "Hariri wasifu wa shamba",
     "threeD": "Mandhari ya 3D Nyumbani",
@@ -262,6 +263,32 @@
     "later": "Chunguza kwanza",
     "nameLabel": "Jina lako (hiari)",
     "namePlaceholder": "mf. Juma"
+  },
+  "mode": {
+    "prompt": "Utatumiaje Lima?",
+    "personalTitle": "Shamba langu mwenyewe",
+    "personalBody": "Simamia shamba lako — hali ya hewa, ushauri wa umwagiliaji, rekodi na msaidizi wa AI.",
+    "hubTitle": "Kituo cha Jamii",
+    "hubBody": "Kiongozi husimamia wakulima wengi wasio na simu — tazama ushauri na weka rekodi zao.",
+    "switchLater": "Unaweza kubadilisha wakati wowote katika Mipangilio."
+  },
+  "hub": {
+    "leaderHi": "Karibu, kiongozi",
+    "title": "Kituo cha Lima",
+    "subtitle": "Simamia wakulima wako",
+    "farmerCount_one": "mkulima {{count}}",
+    "farmerCount_other": "wakulima {{count}}",
+    "addFarmer": "Ongeza mkulima",
+    "emptyTitle": "Bado hakuna wakulima",
+    "emptyHint": "Ongeza wakulima unaowasaidia ili uweze kutazama ushauri na kuweka rekodi zao.",
+    "switchPersonal": "Badili kwenda shamba langu",
+    "fName": "Jina la mkulima",
+    "fCrop": "Zao kuu",
+    "fLocation": "Kijiji / eneo",
+    "fLocationPh": "mf. Nakuru",
+    "fFieldSize": "Ukubwa wa shamba (ha)",
+    "fPhone": "Simu (hiari)",
+    "fNote": "Maelezo (hiari)"
   },
   "tools": {
     "title": "Zana za shamba",

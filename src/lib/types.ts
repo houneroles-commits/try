@@ -1,6 +1,19 @@
 export type Language = 'en' | 'sw' | 'zu' | 'st' | 'af';
 export type ThemeMode = 'light' | 'dark' | 'system';
 export type TextSize = 'normal' | 'large';
+export type AppMode = 'personal' | 'hub';
+
+/** A farmer managed by a Hub Leader (for farmers without their own phone). */
+export interface HubFarmer {
+  id: string;
+  name: string;
+  crop: CropId;
+  location: string;
+  fieldSizeHa: number;
+  phone?: string;
+  note?: string;
+  createdAt: string;
+}
 
 export type CropId =
   | 'maize'
@@ -41,6 +54,7 @@ export interface Settings {
   dashboardTourSeen?: boolean;
   textSize?: TextSize;
   highContrast?: boolean;
+  appMode?: AppMode; // unset = show the choice screen on open
 }
 
 export interface CurrentWeather {

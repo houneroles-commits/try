@@ -13,6 +13,8 @@ import Fertilizer from './pages/Fertilizer';
 import Pests from './pages/Pests';
 import Finance from './pages/Finance';
 import Onboarding from './pages/Onboarding';
+import ModeSelect from './pages/ModeSelect';
+import Hub from './pages/Hub';
 import { Skeleton } from './components/ui';
 import { useApp } from './state/AppContext';
 
@@ -33,12 +35,23 @@ export default function App() {
   const { settings } = useApp();
   return (
     <Routes>
+      {/* First-open choice + Hub live outside the farmer Layout (own chrome) */}
+      <Route path="/welcome" element={<ModeSelect />} />
+      <Route path="/hub" element={<Hub />} />
       <Route path="/onboarding" element={<Onboarding />} />
       <Route element={<Layout />}>
         <Route
           path="/"
           element={
-            settings.onboarded ? <Home /> : <Navigate to="/onboarding" replace />
+            !settings.appMode ? (
+              <Navigate to="/welcome" replace />
+            ) : settings.appMode === 'hub' ? (
+              <Navigate to="/hub" replace />
+            ) : settings.onboarded ? (
+              <Home />
+            ) : (
+              <Navigate to="/onboarding" replace />
+            )
           }
         />
         <Route path="/assistant" element={<Assistant />} />

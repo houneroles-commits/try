@@ -216,6 +216,7 @@
     "textLarge": "Large text",
     "sunlight": "Sunlight mode",
     "sunlightHint": "High contrast for reading in bright sun.",
+    "switchMode": "Switch mode (Personal / Hub)",
     "profile": "Farm profile",
     "editProfile": "Edit farm profile",
     "threeD": "3D scene on Home",
@@ -262,6 +263,32 @@
     "later": "Explore first",
     "nameLabel": "Your name (optional)",
     "namePlaceholder": "e.g. Thabo"
+  },
+  "mode": {
+    "prompt": "How will you use Lima?",
+    "personalTitle": "My own farm",
+    "personalBody": "Manage your own farm — weather, watering advice, records and the AI assistant.",
+    "hubTitle": "Community Hub",
+    "hubBody": "A leader manages many farmers who don't have a phone — look up advice and keep their records.",
+    "switchLater": "You can switch anytime in Settings."
+  },
+  "hub": {
+    "leaderHi": "Welcome, leader",
+    "title": "Lima Hub",
+    "subtitle": "Manage your farmers",
+    "farmerCount_one": "{{count}} farmer",
+    "farmerCount_other": "{{count}} farmers",
+    "addFarmer": "Add a farmer",
+    "emptyTitle": "No farmers yet",
+    "emptyHint": "Add the farmers you help so you can look up advice and keep their records.",
+    "switchPersonal": "Switch to my own farm",
+    "fName": "Farmer's name",
+    "fCrop": "Main crop",
+    "fLocation": "Village / area",
+    "fLocationPh": "e.g. Nakuru",
+    "fFieldSize": "Field size (ha)",
+    "fPhone": "Phone (optional)",
+    "fNote": "Note (optional)"
   },
   "tools": {
     "title": "Farm tools",
